@@ -8,15 +8,67 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+
+import java.util.ArrayList;
 
 public class LoginActivity extends Activity {
     public final static String SESSION_TOKEN_KEY = "cornell.CS5412.SESSION_TOKEN_KEY";
     public final static String USER_ID = "cornell.CS5412.USER_ID";
 
+    public LoginButton loginButton;
+    public CallbackManager callbackManager;
+    public TextView loginStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+
+        callbackManager = CallbackManager.Factory.create();
+        loginButton = (LoginButton) findViewById(R.id.fb_login_button);
+        loginStatus = (TextView) findViewById(R.id.login_label);
+
+        ArrayList<String> readPermissions = new ArrayList<>();
+        readPermissions.add("public_profile");
+        readPermissions.add("user_friends");
+        loginButton.setReadPermissions(readPermissions);
+
+        // Callback registration
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                // App code
+                Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+                loginButton.setText("Login attempt canceled.");
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+                loginButton.setText("Login attempt failed.");
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

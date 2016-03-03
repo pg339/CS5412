@@ -4,15 +4,29 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.Profile;
 import com.facebook.appevents.AppEventsLogger;
 
 public class FeedActivity extends Activity {
+
+    TextView info;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
+
+        info = (TextView) findViewById(R.id.feed_text);
+        Profile profile = Profile.getCurrentProfile();
+        info.setText("User ID: "
+                        + profile.getId()
+                        + "\n" +
+                        "Auth Token: "
+                        + AccessToken.getCurrentAccessToken().getToken()
+        );
     }
 
     @Override
