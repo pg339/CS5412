@@ -3,6 +3,7 @@ package cornell.cs5412;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,14 +15,19 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class LoginActivity extends Activity {
     public final static String SESSION_TOKEN_KEY = "cornell.CS5412.SESSION_TOKEN_KEY";
     public final static String USER_ID = "cornell.CS5412.USER_ID";
+    public final static String CREATE_ACCOUNT_URL = "/api/account/";
+    public final static String FEED = "cornell.CS5412.FEED";
 
     public LoginButton loginButton;
     public CallbackManager callbackManager;
@@ -46,20 +52,16 @@ public class LoginActivity extends Activity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                // App code
-                Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
-                startActivity(intent);
+                new CreateAccountTask().execute(Profile.getCurrentProfile().getId()).execute();
             }
 
             @Override
             public void onCancel() {
-                // App code
                 loginButton.setText("Login attempt canceled.");
             }
 
             @Override
             public void onError(FacebookException exception) {
-                // App code
                 loginButton.setText("Login attempt failed.");
             }
         });
@@ -106,5 +108,37 @@ public class LoginActivity extends Activity {
 
         Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
         startActivity(intent);
+    }
+
+    private class CreateAccountTask extends AsyncTask<String, Void, String> {
+        //TODO: Change return to Feed, implement parcelable in Feed and Coordinates
+
+        @Override
+        protected String doInBackground(String... args) {
+            try {
+                HttpResponse response = NetworkUtil.httpPost(CREATE_ACCOUNT_URL + args[0], "");
+                if (response.responseCode >= 500 && response.responseCode < 600) {
+                    cancel(true);
+                    return null;
+                }
+                return response.content;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
+            intent.putExtra(FEED, s);
+            startActivity(intent);
+        }
+
+        @Override
+        protected void onCancelled(String s) {
+            //TODO: Refine this possibly
+            loginStatus.setText("Login failed");
+        }
     }
 }

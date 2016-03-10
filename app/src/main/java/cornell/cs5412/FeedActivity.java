@@ -1,6 +1,7 @@
 package cornell.cs5412;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 import com.facebook.AccessToken;
 import com.facebook.Profile;
 import com.facebook.appevents.AppEventsLogger;
+
+import java.net.HttpURLConnection;
 
 public class FeedActivity extends Activity {
 
@@ -65,5 +68,19 @@ public class FeedActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class GetMainFeedTask extends AsyncTask<String, Void, Feed> {
+        //TODO: Actually get and process feed
+
+        @Override
+        protected Feed doInBackground(String... args) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Feed feed) {
+
+        }
     }
 }
