@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,23 +38,29 @@ public class NetworkUtil {
         // Only display the first 500 characters of the retrieved
         // web page content.
         int len = 5000;
+        HttpURLConnection conn = null;
 
         try {
             URL url = new URL(myurl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000 /* milliseconds */);
             conn.setConnectTimeout(15000 /* milliseconds */);
             conn.setRequestMethod(method);
-            if ((method.equals("POST") || method.equals("PUT")) && content.length() > 0) {
+            if ((method.equals("POST") || method.equals("PUT")) && content != null && content.length() > 0) {
                 conn.setDoOutput(true);
-                conn.setChunkedStreamingMode(0);
+                conn.setUseCaches(false);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setRequestProperty("Host", "android.schoolportal.gr");
 
-                OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-                out.write(content.getBytes());
+                OutputStream out = new DataOutputStream(conn.getOutputStream());
+                out.write(content.getBytes("UTF-8"));
                 out.flush();
                 out.close();
+            } else {
+                conn.setDoInput(true);
             }
-            conn.setDoInput(true);
+
             // Starts the query
             conn.connect();
             int response = conn.getResponseCode();
@@ -70,6 +77,7 @@ public class NetworkUtil {
             if (is != null) {
                 is.close();
             }
+            if (conn != null) conn.disconnect();
         }
     }
 

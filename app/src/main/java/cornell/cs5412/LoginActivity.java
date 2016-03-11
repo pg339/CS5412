@@ -26,7 +26,6 @@ import java.util.ArrayList;
 public class LoginActivity extends Activity {
     public final static String SESSION_TOKEN_KEY = "cornell.CS5412.SESSION_TOKEN_KEY";
     public final static String USER_ID = "cornell.CS5412.USER_ID";
-    public final static String CREATE_ACCOUNT_URL = "/api/account/";
     public final static String FEED = "cornell.CS5412.FEED";
 
     public LoginButton loginButton;
@@ -52,7 +51,7 @@ public class LoginActivity extends Activity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                new CreateAccountTask().execute(Profile.getCurrentProfile().getId()).execute();
+                new CreateAccountTask().execute("pablo");
             }
 
             @Override
@@ -106,22 +105,22 @@ public class LoginActivity extends Activity {
         editor.putString(USER_ID, userId);
         editor.commit();
 
-        Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
-        startActivity(intent);
+        new CreateAccountTask().execute(userId);
     }
 
-    private class CreateAccountTask extends AsyncTask<String, Void, String> {
+    private class CreateAccountTask extends AsyncTask<String, Void, HttpResponse> {
         //TODO: Change return to Feed, implement parcelable in Feed and Coordinates
 
         @Override
-        protected String doInBackground(String... args) {
+        protected HttpResponse doInBackground(String... args) {
             try {
-                HttpResponse response = NetworkUtil.httpPost(CREATE_ACCOUNT_URL + args[0], "");
+                String url = getString(R.string.create_account_url);
+                HttpResponse response = NetworkUtil.httpPost(url + args[0], "");
                 if (response.responseCode >= 500 && response.responseCode < 600) {
                     cancel(true);
                     return null;
                 }
-                return response.content;
+                return response;
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
@@ -129,14 +128,14 @@ public class LoginActivity extends Activity {
         }
 
         @Override
-        protected void onPostExecute(String s) {
+        protected void onPostExecute(HttpResponse res) {
+            loginStatus.setText("Response code is: "+res.responseCode+" and content is "+res.content);
             Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
-            intent.putExtra(FEED, s);
             startActivity(intent);
         }
 
         @Override
-        protected void onCancelled(String s) {
+        protected void onCancelled(HttpResponse s) {
             //TODO: Refine this possibly
             loginStatus.setText("Login failed");
         }

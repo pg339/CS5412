@@ -1,17 +1,17 @@
 package cornell.cs5412;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.Profile;
 import com.facebook.appevents.AppEventsLogger;
-
-import java.net.HttpURLConnection;
 
 public class FeedActivity extends Activity {
 
@@ -19,6 +19,7 @@ public class FeedActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //TODO: Display feed JSON
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 
@@ -68,6 +69,11 @@ public class FeedActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void createEvent(View view) {
+        Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
+        startActivity(intent);
     }
 
     private class GetMainFeedTask extends AsyncTask<String, Void, Feed> {
