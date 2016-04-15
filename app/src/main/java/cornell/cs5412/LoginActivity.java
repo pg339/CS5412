@@ -129,9 +129,14 @@ public class LoginActivity extends Activity {
 
         @Override
         protected void onPostExecute(HttpResponse res) {
-            loginStatus.setText("Response code is: "+res.responseCode+" and content is "+res.content);
-            Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
-            startActivity(intent);
+            if (res != null) {
+                loginStatus.setText("Response code is: " + res.responseCode + " and content is " + res.content);
+                Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
+                startActivity(intent);
+            }
+            else {
+                loginStatus.setText("Response came back empty");
+            }
         }
 
         @Override

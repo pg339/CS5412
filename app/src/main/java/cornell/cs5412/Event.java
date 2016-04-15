@@ -1,8 +1,8 @@
 package cornell.cs5412;
 
 import com.facebook.Profile;
-import com.facebook.login.LoginManager;
 
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -17,7 +17,7 @@ public class Event {
     private String owner;
     private String description;
     private String category;
-    private Date startTime;
+    private String startTime;
     private String location;
     private double latitude;
     private double longitude;
@@ -28,7 +28,7 @@ public class Event {
     private List<String> rsvps;
 
     public Event(String id, String title, String owner, String description, String category,
-                 Date startTime, String location, double latitude, double longitude, int minRsvps,
+                 String startTime, String location, double latitude, double longitude, int minRsvps,
                  int maxRsvps, boolean friends_only, EventStatus eventStatus, List<String> rsvps) {
         this.id = id;
         this.title = title;
@@ -48,14 +48,14 @@ public class Event {
 
     public Event(String title, String description, String category, String location, double latitude,
                  double longitude, int minRsvps, int maxRsvps) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String currentDateAndTime = sdf.format(new Date());
-        this.id = Profile.getCurrentProfile().getId() + ":" + currentDateAndTime;
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        String date = formatter.format(new Date());
+        this.id = Profile.getCurrentProfile().getId() + ":" + date;
         this.title = title;
         this.owner = Profile.getCurrentProfile().getId();
         this.description = description;
         this.category = category;
-        this.startTime = new Date(2016,8,8,8,8,8);
+        this.startTime = date;
         this.location = location;
         this.latitude = latitude;
         this.longitude = longitude;
