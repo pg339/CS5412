@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,39 +16,39 @@ import com.facebook.Profile;
 import com.facebook.appevents.AppEventsLogger;
 
 public class FeedActivity extends Activity {
-
-    TextView info;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private FeedEvent[] events;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //TODO: Display feed JSON
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feed);
 
-        info = (TextView) findViewById(R.id.feed_text);
-        Profile profile = Profile.getCurrentProfile();
-        info.setText("User ID: "
-                        + profile.getId()
-                        + "\n" +
-                        "Auth Token: "
-                        + AccessToken.getCurrentAccessToken().getToken()
-        );
+
+        events = getEvents();
+        if (events.length == 0) {
+            setContentView(R.layout.activity_feed_empty);
+        } else {
+            setContentView(R.layout.activity_feed);
+            mRecyclerView = (RecyclerView) findViewById(R.id.feed_recycler_view);
+            mLayoutManager = new LinearLayoutManager(this);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+
+            mAdapter = new FeedAdapter(events);
+            mRecyclerView.setAdapter(mAdapter);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        // Logs 'install' and 'app activate' App Events.
-        AppEventsLogger.activateApp(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
-        // Logs 'app deactivate' App Event.
-        AppEventsLogger.deactivateApp(this);
     }
 
     @Override
@@ -74,6 +76,21 @@ public class FeedActivity extends Activity {
     public void createEvent(View view) {
         Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
         startActivity(intent);
+    }
+
+    public FeedEvent[] getEvents() {
+        //placeholder event samples
+        Event event1 = new Event("My event", "Pablo", "Fun in the sun", "Saturday, April 23rd at 8 PM", "David L. Call Auditorium");
+        Event event2 = new Event("My super long and obnoxious event name hahahahahahahahahahhahaahahahahahahaa",
+                "Pablo \"My name is sooooooooooooooooooooooooooooooooooooo freaking long lol what hahaha \" Garcia-Quesada",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ex ante, tempor vel pellentesque ut, cursus at ligula. Sed purus nisi, fermentum nec felis id, viverra consequat nisi. Sed fermentum convallis purus, eu viverra enim feugiat sed. Proin sit amet pulvinar dui. Nam nibh nisl, scelerisque vel elementum vitae, iaculis a arcu. Ut convallis nunc non metus pellentesque semper. Cras eget elit lorem. Aliquam erat volutpat. Praesent sollicitudin imperdiet condimentum. Sed a purus at dolor rhoncus elementum a et ligula. Duis odio tortor, ornare ac elementum ac, varius id nunc. Etiam blandit gravida urna in cursus. Praesent ultricies tortor et arcu luctus, bibendum consectetur massa eleifend. Proin fringilla lorem vel feugiat maximus. Vivamus nec lobortis ante. Phasellus dictum fringilla semper.\n" +
+                        "\n" +
+                        "Mauris sit amet elit interdum, egestas elit at, luctus purus. Donec sed lorem vel tellus imperdiet efficitur. Cras dapibus id sapien ut sodales. Nulla id eleifend ex. Pellentesque ante ipsum, ullamcorper vel posuere nec, venenatis non ante. Nullam ut sem eget erat posuere accumsan tincidunt id justo. Etiam pulvinar sagittis nulla vitae fringilla. Donec a massa eu tortor aliquam interdum. Morbi eget congue neque, eget maximus justo. Suspendisse et urna ac tortor tristique porta nec eu dui. Fusce in commodo dui. Cras eu venenatis mauris. Aenean sed tempor libero, consectetur ornare lacus. Sed nec augue purus. Nam non erat et neque semper porttitor. Nulla a lobortis dolor, volutpat posuere est.\n" +
+                        "\n" +
+                        "Sed in lacus in metus aliquam gravida id eu nibh. Integer magna velit, posuere ac ex ac, molestie tincidunt augue. Curabitur et felis est. Vestibulum consectetur, diam aliquam scelerisque venenatis, ante massa eleifend risus, ac commodo justo ligula eget lacus. Aenean efficitur lacinia odio, vel finibus mi varius interdum. Nam id velit suscipit, dignissim velit sed, varius nulla. Aenean sit amet ligula luctus, maximus ante vel, congue arcu. Cras finibus posuere quam.",
+                "Saturday, April 23rd at 8 PM",
+                "David L. Call Auditorium, Ithaca, NY 14850000000000000000000000000000000000");
+        return new FeedEvent[] {new FeedEvent(getApplicationContext(), event1), new FeedEvent(getApplicationContext(), event2)};
     }
 
     private class GetMainFeedTask extends AsyncTask<String, Void, Feed> {

@@ -8,4 +8,5 @@
     <string name="facebook_app_id">1570134529971692</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_create_event">CreateEventActivity</string>
+    <string name="empty_feed_text">There are no events in your area</string>
 </resources>
