@@ -4,6 +4,7 @@ import com.facebook.Profile;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class Event implements IEvent{
         this.maxRsvps = 0;
         this.friends_only = false;
         this.eventStatus = EventStatus.PENDING;
-        this.rsvps = null;
+        this.rsvps = new ArrayList<>();
     }
 
     public Event(String title, String description, String category, String location, double latitude,
@@ -84,7 +85,7 @@ public class Event implements IEvent{
         this.maxRsvps = maxRsvps;
         this.friends_only = false;
         this.eventStatus = EventStatus.PENDING;
-        this.rsvps = null;
+        this.rsvps = new ArrayList<>();
     }
 
     @Override
@@ -218,7 +219,7 @@ public class Event implements IEvent{
     }
 
     @Override
-    public List getRsvps() {
+    public List<String> getRsvps() {
         return rsvps;
     }
 

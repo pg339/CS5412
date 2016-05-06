@@ -4,8 +4,11 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="large_vertical_margin">14dp</dimen>
     <dimen name="display_text_size">18sp</dimen>
-    <dimen name="threads_text_size">16sp</dimen>
-    <dimen name="large_display_text_size">22sp</dimen>
+    <dimen name="small_display_text_size">16sp</dimen>
+    <dimen name="large_display_text_size">20sp</dimen>
+    <dimen name="xlarge_display_text_size">24sp</dimen>
+    <dimen name="xxlarge_display_text_size">28sp</dimen>
+    <dimen name="xxxlarge_display_text_size">32sp</dimen>
     <dimen name="status_text_size">12sp</dimen>
     <dimen name="header_text_size">24sp</dimen>
     <dimen name="button_text_size">14sp</dimen>

@@ -1,8 +1,20 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Material">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="android:Theme.Material.Light">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">@dimen/display_text_size</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:textViewStyle">@style/NoBackgroundTextView</item>
+    </style>
+
+    <style name="NoBackgroundTextView" parent="android:Widget.TextView">
+        <item name="android:background">@color/transparent</item>
     </style>
 
 </resources>

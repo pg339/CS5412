@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="bkg_color" type="color">#ff3f51b5</item>
+    <item name="card_color" type="color">#ffffffff</item>
+    <item name="text_color" type="color">#ff000000</item>
+    <item name="edit_text_color" type="color">#ff000000</item>
+    <item name="message_head_color" type="color">#ffffffe5</item>
+    <item name="button_background_color" type="color">#ffcbcbcb</item>
+    <item name="spinner_color" type="color">#fffcfcfc</item>
+    <item name="compose_color" type="color">#ffffd8d5</item>
+    <item name="message_body_color" type="color">#ffeeeeee</item>
+    <item name="primary" type="color">#fffce5</item>
+    <item name="primary_dark" type="color">#6c7be7</item>
+    <item name="accent" type="color">#c0caff</item>
+    <item name="transparent" type="color">#0000</item>
+    <item name="dark_gray" type="color">#a6a6a6</item>
+</resources>

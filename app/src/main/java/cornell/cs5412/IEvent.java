@@ -29,6 +29,6 @@ public interface IEvent {
     void setFriends_only(boolean v);
     EventStatus getEventStatus();
     void setEventStatus(EventStatus status);
-    List getRsvps();
+    List<String> getRsvps();
     void setRsvps(List<String> rsvps);
 }

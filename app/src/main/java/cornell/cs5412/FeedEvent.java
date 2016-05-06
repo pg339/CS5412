@@ -2,6 +2,9 @@ package cornell.cs5412;
 
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -24,23 +27,48 @@ public class FeedEvent implements IEvent{
         titleBox = new TextView(context);
         titleBox.setId(View.generateViewId());
         titleBox.setText(event.getTitle());
+        titleBox.setTextSize(TypedValue.COMPLEX_UNIT_PX, context.getResources().getDimension(R.dimen.large_display_text_size));
+        titleBox.setTextColor(Color.BLACK);
+        titleBox.setSingleLine(true);
+        titleBox.setEllipsize(TextUtils.TruncateAt.END);
+        titleBox.setPadding(0, 0, MiscHelpers.pixToDp(context, 10), 0);
         dtlBox = new TextView(context);
         dtlBox.setId(View.generateViewId());
         dtlBox.setText(event.getStartTime() + "\n" + event.getLocation());
         dtlBox.setGravity(Gravity.BOTTOM);
+        dtlBox.setTextSize(TypedValue.COMPLEX_UNIT_PX, context.getResources().getDimension(R.dimen.display_text_size));
+        dtlBox.setTextColor(Color.BLACK);
+        dtlBox.setMaxLines(2);
+        dtlBox.setEllipsize(TextUtils.TruncateAt.END);
         previewBox = new TextView(context);
         previewBox.setId(View.generateViewId());
         previewBox.setText(event.getDescription());
+        previewBox.setTextSize(TypedValue.COMPLEX_UNIT_PX, context.getResources().getDimension(R.dimen.small_display_text_size));
+        previewBox.setTextColor(Color.GRAY);
+        previewBox.setMaxLines(3);
+        previewBox.setEllipsize(TextUtils.TruncateAt.END);
+        previewBox.setPadding(0, 0, MiscHelpers.pixToDp(context, 10), 0);
         rsvpBox = new TextView(context);
         rsvpBox.setId(View.generateViewId());
         rsvpBox.setText("Attending:");
+        rsvpBox.setTextSize(TypedValue.COMPLEX_UNIT_PX, context.getResources().getDimension(R.dimen.display_text_size));
+        rsvpBox.setTextColor(Color.BLACK);
         rsvpCountBox = new TextView(context);
         rsvpCountBox.setId(View.generateViewId());
-        rsvpCountBox.setText(event.getRsvps().toString());
+        rsvpCountBox.setText("" + event.getRsvps().size());
+        rsvpCountBox.setTextSize(TypedValue.COMPLEX_UNIT_PX, context.getResources().getDimension(R.dimen.xxxlarge_display_text_size));
+        rsvpCountBox.setTextColor(Color.BLACK);
+        rsvpCountBox.setGravity(Gravity.CENTER_HORIZONTAL);
+        rsvpCountBox.setPadding(0, MiscHelpers.pixToDp(context, 10), 0, 0);
         creatorBox = new TextView(context);
         creatorBox.setId(View.generateViewId());
         creatorBox.setText("By " + event.getOwner());
         creatorBox.setGravity(Gravity.BOTTOM);
+        creatorBox.setTextSize(TypedValue.COMPLEX_UNIT_PX, context.getResources().getDimension(R.dimen.display_text_size));
+        creatorBox.setTextColor(Color.BLACK);
+        creatorBox.setSingleLine(true);
+        creatorBox.setEllipsize(TextUtils.TruncateAt.END);
+        creatorBox.setPadding(0, 0, MiscHelpers.pixToDp(context, 10), 0);
 
         RelativeLayout.LayoutParams rsvpParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -53,32 +81,33 @@ public class FeedEvent implements IEvent{
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         titleParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        titleParams.addRule(RelativeLayout.ALIGN_LEFT, rsvpBox.getId());
+        titleParams.addRule(RelativeLayout.LEFT_OF, rsvpBox.getId());
         titleParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         titleBox.setLayoutParams(titleParams);
+
+        RelativeLayout.LayoutParams creatorParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        creatorParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        creatorParams.addRule(RelativeLayout.BELOW, titleBox.getId());
+        creatorParams.addRule(RelativeLayout.LEFT_OF, rsvpBox.getId());
+        creatorBox.setLayoutParams(creatorParams);
 
         RelativeLayout.LayoutParams previewParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         previewParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        previewParams.addRule(RelativeLayout.ALIGN_LEFT, rsvpBox.getId());
-        previewParams.addRule(RelativeLayout.BELOW, titleBox.getId());
+        previewParams.addRule(RelativeLayout.LEFT_OF, rsvpBox.getId());
+        previewParams.addRule(RelativeLayout.BELOW, creatorBox.getId());
         previewBox.setLayoutParams(previewParams);
 
         RelativeLayout.LayoutParams countParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
-        countParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        countParams.addRule(RelativeLayout.ALIGN_LEFT, rsvpBox.getId());
+        countParams.addRule(RelativeLayout.ALIGN_RIGHT, rsvpBox.getId());
         countParams.addRule(RelativeLayout.BELOW, rsvpBox.getId());
         rsvpCountBox.setLayoutParams(countParams);
-
-        RelativeLayout.LayoutParams creatorParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-        creatorParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        creatorParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        creatorParams.addRule(RelativeLayout.BELOW, rsvpBox.getId());
-        creatorBox.setLayoutParams(creatorParams);
 
         RelativeLayout.LayoutParams dtlParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -86,7 +115,6 @@ public class FeedEvent implements IEvent{
         dtlParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         dtlParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         dtlParams.addRule(RelativeLayout.BELOW, previewBox.getId());
-        titleParams.addRule(RelativeLayout.ALIGN_LEFT, creatorBox.getId());
         dtlBox.setLayoutParams(dtlParams);
     }
 
@@ -221,7 +249,7 @@ public class FeedEvent implements IEvent{
     }
 
     @Override
-    public List getRsvps() {
+    public List<String> getRsvps() {
         return event.getRsvps();
     }
 

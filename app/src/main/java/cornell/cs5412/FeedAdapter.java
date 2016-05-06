@@ -3,6 +3,7 @@ package cornell.cs5412;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import cornell.cs5412.MiscHelpers.*;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedEventViewHolder> {
     private FeedEvent[] events;
@@ -27,6 +28,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedEventViewH
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         layout.setLayoutParams(layoutParams);
+        layout.setPadding(MiscHelpers.pixToDp(parent.getContext(), 10),
+                MiscHelpers.pixToDp(parent.getContext(), 10),
+                MiscHelpers.pixToDp(parent.getContext(), 10),
+                MiscHelpers.pixToDp(parent.getContext(), 10));
         return new FeedEventViewHolder(layout);
     }
 
