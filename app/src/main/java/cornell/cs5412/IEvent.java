@@ -21,9 +21,9 @@ public interface IEvent {
     void setLatitude(double lat);
     double getLongitude();
     void setLongitude(double lon);
-    int getMinRsvps();
+    Integer getMinRsvps();
     void setMinRsvps(int min);
-    int getMaxRsvps();
+    Integer getMaxRsvps();
     void setMaxRsvps(int max);
     boolean isFriends_only();
     void setFriends_only(boolean v);

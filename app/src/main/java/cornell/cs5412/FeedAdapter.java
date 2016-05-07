@@ -6,7 +6,7 @@ import android.widget.RelativeLayout;
 import cornell.cs5412.MiscHelpers.*;
 
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedEventViewHolder> {
-    private FeedEvent[] events;
+    public FeedEvent[] events;
 
     public static class FeedEventViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case

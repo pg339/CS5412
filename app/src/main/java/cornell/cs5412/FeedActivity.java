@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -39,6 +40,15 @@ public class FeedActivity extends Activity {
             mAdapter = new FeedAdapter(events);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(this));
+            mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(),
+                    new RecyclerItemClickListener.OnItemClickListener() {
+                        @Override public void onItemClick(View view, int position) {
+                            Intent intent = new Intent(getApplicationContext(), EventViewActivity.class);
+                            intent.putExtra(EventViewActivity.EVENT_EXTRA,
+                                    (Parcelable) ((FeedAdapter) mAdapter).events[position].event);
+                            startActivity(intent);
+                        }
+                    }));
         }
     }
 

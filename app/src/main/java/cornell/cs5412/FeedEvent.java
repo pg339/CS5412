@@ -136,6 +136,7 @@ public class FeedEvent implements IEvent{
     @Override
     public void setTitle(String title) {
         event.setTitle(title);
+        titleBox.setText(title);
     }
 
     @Override
@@ -156,6 +157,7 @@ public class FeedEvent implements IEvent{
     @Override
     public void setDescription(String description) {
         event.setDescription(description);
+        previewBox.setText(description);
     }
 
     @Override
@@ -176,6 +178,7 @@ public class FeedEvent implements IEvent{
     @Override
     public void setStartTime(String startTime) {
         event.setStartTime(startTime);
+        dtlBox.setText(startTime+"\n"+event.getLocation());
     }
 
     @Override
@@ -186,6 +189,7 @@ public class FeedEvent implements IEvent{
     @Override
     public void setLocation(String location) {
         event.setLocation(location);
+        dtlBox.setText(event.getStartTime()+"\n"+location);
     }
 
     @Override
@@ -209,7 +213,7 @@ public class FeedEvent implements IEvent{
     }
 
     @Override
-    public int getMinRsvps() {
+    public Integer getMinRsvps() {
         return event.getMinRsvps();
     }
 
@@ -219,7 +223,7 @@ public class FeedEvent implements IEvent{
     }
 
     @Override
-    public int getMaxRsvps() {
+    public Integer getMaxRsvps() {
         return event.getMaxRsvps();
     }
 
@@ -256,5 +260,6 @@ public class FeedEvent implements IEvent{
     @Override
     public void setRsvps(List<String> rsvps) {
         event.setRsvps(rsvps);
+        rsvpCountBox.setText(""+rsvps.size());
     }
 }

@@ -7,10 +7,9 @@
     <item name="message_head_color" type="color">#ffffffe5</item>
     <item name="button_background_color" type="color">#ffcbcbcb</item>
     <item name="spinner_color" type="color">#fffcfcfc</item>
-    <item name="compose_color" type="color">#ffffd8d5</item>
     <item name="message_body_color" type="color">#ffeeeeee</item>
-    <item name="primary" type="color">#fffce5</item>
-    <item name="primary_dark" type="color">#6c7be7</item>
+    <item name="primary" type="color">#a5b0ff</item>
+    <item name="primary_dark" type="color">#3e53f0</item>
     <item name="accent" type="color">#c0caff</item>
     <item name="transparent" type="color">#0000</item>
     <item name="dark_gray" type="color">#a6a6a6</item>

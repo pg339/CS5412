@@ -1,5 +1,8 @@
 package cornell.cs5412;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.facebook.Profile;
 
 import java.text.Format;
@@ -12,7 +15,7 @@ import java.util.List;
  * Created by Pablo on 3/2/2016.
  * Class to represent events in a way that's easily translatable into JSON
  */
-public class Event implements IEvent{
+public class Event implements IEvent, Parcelable {
     //TODO: Review constructors
     private String id;
     private String title;
@@ -23,11 +26,31 @@ public class Event implements IEvent{
     private String location;
     private double latitude;
     private double longitude;
-    private int minRsvps;
-    private int maxRsvps;
+    private Integer minRsvps;
+    private Integer maxRsvps;
     private boolean friends_only;
     private EventStatus eventStatus;
     private List<String> rsvps;
+
+    public static Parcelable.Creator<Event> CREATOR = new Creator();
+
+    public Event(Parcel source) {
+        id = source.readString();
+        title = source.readString();
+        owner = source.readString();
+        description = source.readString();
+        category = source.readString();
+        startTime = source.readString();
+        location = source.readString();
+        latitude = source.readDouble();
+        longitude = source.readDouble();
+        minRsvps = source.readInt();
+        maxRsvps = source.readInt();
+        friends_only = 0 != source.readByte();
+        eventStatus = (EventStatus) source.readSerializable();
+        rsvps = new ArrayList<>();
+        source.readStringList(rsvps);
+    }
 
     public Event(String id, String title, String owner, String description, String category,
                  String startTime, String location, double latitude, double longitude, int minRsvps,
@@ -179,7 +202,7 @@ public class Event implements IEvent{
     }
 
     @Override
-    public int getMinRsvps() {
+    public Integer getMinRsvps() {
         return minRsvps;
     }
 
@@ -189,7 +212,7 @@ public class Event implements IEvent{
     }
 
     @Override
-    public int getMaxRsvps() {
+    public Integer getMaxRsvps() {
         return maxRsvps;
     }
 
@@ -226,5 +249,41 @@ public class Event implements IEvent{
     @Override
     public void setRsvps(List<String> rsvps) {
         this.rsvps = rsvps;
+    }
+
+    @Override
+    public int describeContents() {
+        return hashCode();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(title);
+        dest.writeString(owner);
+        dest.writeString(description);
+        dest.writeString(category);
+        dest.writeString(startTime);
+        dest.writeString(location);
+        dest.writeDouble(latitude);
+        dest.writeDouble(longitude);
+        dest.writeInt(minRsvps);
+        dest.writeInt(maxRsvps);
+        dest.writeByte((byte) (friends_only ? 1: 0));
+        dest.writeSerializable(eventStatus);
+        dest.writeStringList(rsvps);
+    }
+
+    private static class Creator implements Parcelable.Creator<Event> {
+
+        @Override
+        public Event createFromParcel(Parcel source) {
+            return new Event(source);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
     }
 }

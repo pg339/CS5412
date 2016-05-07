@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/event_view_bottom_owner"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rectangle_sharp"
+    android:elevation="@dimen/med_elevation"
+    android:layout_alignParentBottom="true">
+    <Button
+        android:id="@+id/event_view_owner_rsvp_count_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin"
+        android:textSize="@dimen/xxlarge_display_text_size"
+        android:layout_centerVertical="true"
+        android:text="5/12" />
+    <TextView
+        android:id="@+id/event_view_owner_rsvp_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/margin"
+        android:layout_toEndOf="@id/event_view_owner_rsvp_count_button"
+        android:layout_alignTop="@id/event_view_owner_rsvp_count_button"
+        android:layout_alignBottom="@id/event_view_owner_rsvp_count_button"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:text="Currently attending \n 5 more needed"/>
+    <Button
+        android:id="@+id/event_view_cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:text="@string/cancel_event"
+        android:padding="@dimen/margin"
+        android:textSize="@dimen/button_text_size"/>
+
+</RelativeLayout>
