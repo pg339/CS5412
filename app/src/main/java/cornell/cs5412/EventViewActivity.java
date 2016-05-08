@@ -1,7 +1,9 @@
 package cornell.cs5412;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.app.Activity;
 import android.text.method.ScrollingMovementMethod;
@@ -31,6 +33,8 @@ public class EventViewActivity extends Activity {
     private TextView titleView;
     private TextView descriptionView;
     private TextView creatorView;
+
+    private BroadcastReceiver logoutReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,5 +99,20 @@ public class EventViewActivity extends Activity {
             rsvpLabel += "\n"+(event.getRsvps().size() - event.getMinRsvps())+"more needed.";
         }
         label.setText(rsvpLabel);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(LoginActivity.LOGOUT_ACTION);
+        logoutReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                finish();
+            }
+        };
+        registerReceiver(logoutReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(logoutReceiver);
     }
 }

@@ -5,32 +5,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".LoginActivity">
 
-    <EditText
-        android:id="@+id/login_user_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:inputType="text"
-        android:imeOptions="actionNext"
-        android:singleLine="true"
-        android:hint="User ID" />
-
-    <Button android:id="@+id/login_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/login_user_id"
-        android:onClick="login"
-        android:layout_centerHorizontal="true"
-        android:text="Log in"
-        android:textSize="@dimen/button_text_size"/>
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/fb_login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/login_button"
+        android:layout_centerInParent="true"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="10dp" />
 

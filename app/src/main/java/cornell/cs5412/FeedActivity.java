@@ -1,33 +1,87 @@
 package cornell.cs5412;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.appevents.AppEventsLogger;
 
+import java.io.IOException;
+
 public class FeedActivity extends Activity {
+    private static final int[] ICONS = {R.drawable.ic_mode_edit_black_24dp,
+            R.drawable.ic_today_black_24dp,
+            R.drawable.ic_settings_black_24dp,
+            R.drawable.ic_do_not_disturb_black_24dp};
+
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private FeedEvent[] events;
 
+    private RecyclerView dRecyclerView;
+    private RecyclerView.Adapter dAdapter;
+    private RecyclerView.LayoutManager dLayoutManager;
+    private DrawerLayout drawer;
+    private Toolbar toolbar;
+
+    private BroadcastReceiver logoutReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //TODO: Display feed JSON
         super.onCreate(savedInstanceState);
+        initializeMainContent();
+        toolbar = (Toolbar) findViewById(R.id.feed_activity_toolbar);
+        setActionBar(toolbar);
+        drawer = (DrawerLayout) findViewById(R.id.feed_activity_drawer_layout);
+        dRecyclerView = (RecyclerView) findViewById(R.id.activity_feed_drawer_recycler);
+        dRecyclerView.setHasFixedSize(true);
+        getResources().getStringArray(R.array.drawer_options);
+        try {
+            dAdapter = new DrawerAdapter(getResources().getStringArray(R.array.drawer_options),
+                    ICONS, Profile.getCurrentProfile().getName(),
+                    FacebookUtil.getFacebookProfilePicture(Profile.getCurrentProfile().getId()));
+            dRecyclerView.setAdapter(dAdapter);
+            dLayoutManager = new LinearLayoutManager(this);
+            dRecyclerView.setLayoutManager(dLayoutManager);
+            dRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(),
+                    new RecyclerItemClickListener.OnItemClickListener() {
+                        @Override public void onItemClick(View view, int position) {
+                            //TODO: Handle menu item click
+                            String[] options = getResources().getStringArray(R.array.drawer_options);
+                            switch (options[position-1]) {
+                                case "My events": break;
+                                case "Events I'm attending": break;
+                                case "Settings": break;
+                                case "Log out":
+                                    FacebookUtil.logout(view.getContext());
+                                    break;
+                            }
+                        }
+                    }));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-
+    public void initializeMainContent() {
         events = getEvents();
         if (events.length == 0) {
             setContentView(R.layout.activity_feed_empty);
@@ -49,6 +103,22 @@ public class FeedActivity extends Activity {
                         }
                     }));
         }
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(LoginActivity.LOGOUT_ACTION);
+        logoutReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                finish();
+            }
+        };
+        registerReceiver(logoutReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(logoutReceiver);
     }
 
     @Override

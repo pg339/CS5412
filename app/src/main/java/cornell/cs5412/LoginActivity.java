@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class LoginActivity extends Activity {
     public final static String SESSION_TOKEN_KEY = "cornell.CS5412.SESSION_TOKEN_KEY";
     public final static String USER_ID = "cornell.CS5412.USER_ID";
-    public final static String FEED = "cornell.CS5412.FEED";
+    public final static String LOGOUT_ACTION = "cornell.CS412.LOGOUT_ACTION";
 
     public LoginButton loginButton;
     public CallbackManager callbackManager;
@@ -64,6 +64,11 @@ public class LoginActivity extends Activity {
                 loginButton.setText("Login attempt failed.");
             }
         });
+
+        if (FacebookUtil.isLoggedIn()) {
+            Intent intent = new Intent(this, FeedActivity.class);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -92,20 +97,6 @@ public class LoginActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void login(View view) {
-        EditText userIdBox = (EditText) findViewById(R.id.login_user_id);
-        String userId = userIdBox.getText().toString();
-
-        //TODO: Remove. Only default for convenience
-        if (userId.equals("")) userId = "1";
-
-        SharedPreferences.Editor editor = getSharedPreferences(SESSION_TOKEN_KEY, 0).edit();
-        editor.putString(USER_ID, userId);
-        editor.commit();
-
-        new CreateAccountTask().execute(userId);
     }
 
     private class CreateAccountTask extends AsyncTask<String, Void, HttpResponse> {
