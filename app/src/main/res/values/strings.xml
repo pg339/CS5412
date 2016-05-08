@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">CS5412</string>
 
-    <string name="create_account_url">"http://172.16.42.5:8080/api/account/"</string>
-    <string name="create_event_url">"http://172.16.42.5:8080/api/event"</string>
+    <string name="create_account_url">"http://10.145.10.164:8080/api/account/"</string>
+    <string name="create_event_url">"http://10.145.10.164:8080/api/event"</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_feed">FeedActivity</string>
     <string name="facebook_app_id">1570134529971692</string>
@@ -12,4 +12,10 @@
     <string name="title_activity_event_view">EventViewActivity</string>
     <string name="attending_switch">Going:</string>
     <string name="cancel_event">Cancel\nEvent</string>
+    <string-array name="drawer_options">
+        <item>My events</item>
+        <item>Events I\'m attending</item>
+        <item>Settings</item>
+        <item>Log out</item>
+    </string-array>
 </resources>

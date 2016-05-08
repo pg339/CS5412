@@ -44,8 +44,7 @@ public class FeedActivity extends Activity {
                     new RecyclerItemClickListener.OnItemClickListener() {
                         @Override public void onItemClick(View view, int position) {
                             Intent intent = new Intent(getApplicationContext(), EventViewActivity.class);
-                            intent.putExtra(EventViewActivity.EVENT_EXTRA,
-                                    (Parcelable) ((FeedAdapter) mAdapter).events[position].event);
+                            intent.putExtra(EventViewActivity.EVENT_EXTRA, (Parcelable) ((FeedAdapter) mAdapter).events[position].event);
                             startActivity(intent);
                         }
                     }));

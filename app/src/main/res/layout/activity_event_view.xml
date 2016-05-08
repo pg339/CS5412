@@ -7,37 +7,84 @@
     tools:context="cornell.cs5412.EventViewActivity">
 
     <RelativeLayout
-        android:id="@+id/event_view_header"
+        android:id="@+id/event_view_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/rectangle_sharp"
-        android:elevation="@dimen/med_elevation">
-        <TextView
-            android:id="@+id/event_view_title"
-            android:layout_width="match_parent"
+        android:elevation="@dimen/low_elevation"
+        android:gravity="center_vertical"
+        android:layout_alignParentBottom="true">
+        <Button
+            android:id="@+id/event_view_rsvp_count_button"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="@dimen/xxxlarge_display_text_size"
-            android:text="Title"/>
+            android:layout_alignParentStart="true"
+            android:padding="@dimen/margin"
+            android:textSize="@dimen/xxlarge_display_text_size"
+            android:layout_centerVertical="true"
+            android:text="5/12"/>
         <TextView
-            android:id="@+id/event_view_creator"
-            android:layout_width="match_parent"
+            android:id="@+id/event_view_rsvp_label"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_below="@id/event_view_title"
-            android:textSize="@dimen/large_display_text_size"
-            android:text="Hosted by creator"/>
-
+            android:paddingStart="@dimen/margin"
+            android:layout_toEndOf="@id/event_view_rsvp_count_button"
+            android:layout_alignTop="@id/event_view_rsvp_count_button"
+            android:layout_alignBottom="@id/event_view_rsvp_count_button"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:text="Currently attending \n 5 more needed"/>
     </RelativeLayout>
-    <TextView
-        android:id="@+id/event_view_description"
+    <RelativeLayout
+        android:id="@+id/event_view_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/event_view_header"
-        android:textSize="@dimen/display_text_size"
-        android:padding="@dimen/margin"
-        android:scrollbars="vertical"
-        android:text="Description"/>
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/event_view_bottom">
+        <Toolbar
+            android:id="@+id/event_view_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:elevation="@dimen/low_elevation"
+            android:background="@color/primary"
+            android:gravity="start">
 
+        </Toolbar>
+
+        <RelativeLayout
+            android:id="@+id/event_view_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rectangle_sharp"
+            android:layout_below="@id/event_view_toolbar"
+            android:elevation="@dimen/low_elevation">
+            <TextView
+                android:id="@+id/event_view_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="@dimen/xxxlarge_display_text_size"
+                android:text="Title"/>
+            <TextView
+                android:id="@+id/event_view_creator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_below="@id/event_view_title"
+                android:textSize="@dimen/large_display_text_size"
+                android:text="Hosted by creator"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/event_view_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/event_view_header"
+            android:textSize="@dimen/display_text_size"
+            android:padding="@dimen/margin"
+            android:scrollbars="vertical"
+            android:text="Description"/>
+    </RelativeLayout>
 </RelativeLayout>
