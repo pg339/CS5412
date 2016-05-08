@@ -47,10 +47,10 @@ public class EventViewActivity extends Activity {
         creatorView = (TextView) findViewById(R.id.event_view_creator);
 
         bottom = (RelativeLayout) findViewById(R.id.event_view_bottom);
+        label = (TextView) findViewById(R.id.event_view_rsvp_label);
+        countButton = (Button) findViewById(R.id.event_view_rsvp_count_button);
 
         if (event.getOwner().equals(user)) {
-            countButton = (Button) findViewById(R.id.event_view_rsvp_count_button);
-            label = (TextView) findViewById(R.id.event_view_rsvp_label);
             cancel = (Button) getLayoutInflater().inflate(R.layout.cancel_event_button, null);
             bottom.addView(cancel);
             cancel.setOnClickListener(new View.OnClickListener() {
@@ -59,11 +59,9 @@ public class EventViewActivity extends Activity {
                 }
             });
         } else {
-            countButton = (Button) findViewById(R.id.event_view_rsvp_count_button);
-            label = (TextView) getLayoutInflater().inflate(R.layout.going_label, null);
-            attendingSwitch = (Switch) getLayoutInflater().inflate(R.layout.attending_switch, null);
-            bottom.addView(label);
-            bottom.addView(attendingSwitch);
+            RelativeLayout switchComponents = (RelativeLayout) View.inflate(this, R.layout.event_view_bottom_switch, bottom);
+            attendingSwitch = (Switch) findViewById(R.id.event_view_attendance_switch);
+            TextView goingLabel = (TextView) findViewById(R.id.event_view_attendance_switch_label);
             attendingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     //TODO: Update rsvp list and send update
