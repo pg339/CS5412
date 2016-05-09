@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,7 @@ import android.widget.TextView;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 
-public class EventViewActivity extends Activity {
+public class EventViewActivity extends AppCompatActivity {
 
     public static final String EVENT_EXTRA = "cornell.cs5412.EVENT_EXTRA";
 
@@ -99,6 +100,7 @@ public class EventViewActivity extends Activity {
             rsvpLabel += "\n"+(event.getRsvps().size() - event.getMinRsvps())+"more needed.";
         }
         label.setText(rsvpLabel);
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(LoginActivity.LOGOUT_ACTION);
         logoutReceiver = new BroadcastReceiver() {

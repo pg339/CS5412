@@ -8,8 +8,10 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -25,7 +27,7 @@ import com.facebook.appevents.AppEventsLogger;
 
 import java.io.IOException;
 
-public class FeedActivity extends Activity {
+public class FeedActivity extends AppCompatActivity {
     private static final int[] ICONS = {R.drawable.ic_mode_edit_black_24dp,
             R.drawable.ic_today_black_24dp,
             R.drawable.ic_settings_black_24dp,
@@ -63,19 +65,30 @@ public class FeedActivity extends Activity {
             dRecyclerView.setLayoutManager(dLayoutManager);
             dRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(),
                     new RecyclerItemClickListener.OnItemClickListener() {
-                        @Override public void onItemClick(View view, int position) {
+                        @Override
+                        public void onItemClick(View view, int position) {
                             //TODO: Handle menu item click
                             String[] options = getResources().getStringArray(R.array.drawer_options);
-                            switch (options[position-1]) {
-                                case "My events": break;
-                                case "Events I'm attending": break;
-                                case "Settings": break;
+                            switch (options[position - 1]) {
+                                case "My events":
+                                    break;
+                                case "Events I'm attending":
+                                    break;
+                                case "Settings":
+                                    break;
                                 case "Log out":
                                     FacebookUtil.logout(view.getContext());
                                     break;
                             }
                         }
                     }));
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.feed_fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
+                    startActivity(intent);
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -153,11 +166,6 @@ public class FeedActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void createEvent(View view) {
-        Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
-        startActivity(intent);
-    }
-
     public FeedEvent[] getEvents() {
         //placeholder event samples
         Event event1 = new Event("My event", "Pablo", "Fun in the sun", "Saturday, April 23rd at 8 PM", "David L. Call Auditorium");
@@ -170,7 +178,12 @@ public class FeedActivity extends Activity {
                         "Sed in lacus in metus aliquam gravida id eu nibh. Integer magna velit, posuere ac ex ac, molestie tincidunt augue. Curabitur et felis est. Vestibulum consectetur, diam aliquam scelerisque venenatis, ante massa eleifend risus, ac commodo justo ligula eget lacus. Aenean efficitur lacinia odio, vel finibus mi varius interdum. Nam id velit suscipit, dignissim velit sed, varius nulla. Aenean sit amet ligula luctus, maximus ante vel, congue arcu. Cras finibus posuere quam.",
                 "Saturday, April 23rd at 8 PM",
                 "David L. Call Auditorium, Ithaca, NY 14850000000000000000000000000000000000");
-        return new FeedEvent[] {new FeedEvent(getApplicationContext(), event1), new FeedEvent(getApplicationContext(), event2)};
+        return new FeedEvent[] {new FeedEvent(getApplicationContext(), event1),
+                new FeedEvent(getApplicationContext(), event2),
+                new FeedEvent(getApplicationContext(), event2),
+                new FeedEvent(getApplicationContext(), event2),
+                new FeedEvent(getApplicationContext(), event2),
+                new FeedEvent(getApplicationContext(), event2)};
     }
 
     private class GetMainFeedTask extends AsyncTask<String, Void, Feed> {

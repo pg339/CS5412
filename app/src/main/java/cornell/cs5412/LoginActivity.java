@@ -68,6 +68,7 @@ public class LoginActivity extends Activity {
         if (FacebookUtil.isLoggedIn()) {
             Intent intent = new Intent(this, FeedActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 
@@ -124,6 +125,7 @@ public class LoginActivity extends Activity {
                 loginStatus.setText("Response code is: " + res.responseCode + " and content is " + res.content);
                 Intent intent = new Intent(getApplicationContext(), FeedActivity.class);
                 startActivity(intent);
+                finish();
             }
             else {
                 loginStatus.setText("Response came back empty");

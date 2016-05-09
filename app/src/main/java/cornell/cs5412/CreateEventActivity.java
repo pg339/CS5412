@@ -1,8 +1,13 @@
 package cornell.cs5412;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,7 +18,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 
-public class CreateEventActivity extends Activity {
+public class CreateEventActivity extends AppCompatActivity {
     EditText titleBox;
     EditText descriptionBox;
     EditText categoryBox;
@@ -23,6 +28,8 @@ public class CreateEventActivity extends Activity {
     EditText minRsvpsBox;
     EditText maxRsvpsBox;
     TextView info;
+
+    private BroadcastReceiver logoutReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +46,21 @@ public class CreateEventActivity extends Activity {
         maxRsvpsBox = (EditText) findViewById(R.id.maxRsvps_box);
         info = (TextView) findViewById(R.id.create_event_label);
 
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(LoginActivity.LOGOUT_ACTION);
+        logoutReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                finish();
+            }
+        };
+        registerReceiver(logoutReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(logoutReceiver);
     }
 
     @Override
