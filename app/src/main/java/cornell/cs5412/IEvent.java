@@ -11,8 +11,6 @@ public interface IEvent {
     void setOwner(String owner);
     String getDescription();
     void setDescription(String description);
-    String getCategory();
-    void setCategory(String category);
     String getStartTime();
     void setStartTime(String startTime);
     String getLocation();
@@ -25,8 +23,6 @@ public interface IEvent {
     void setMinRsvps(int min);
     Integer getMaxRsvps();
     void setMaxRsvps(int max);
-    boolean isFriends_only();
-    void setFriends_only(boolean v);
     EventStatus getEventStatus();
     void setEventStatus(EventStatus status);
     List<String> getRsvps();

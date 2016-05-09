@@ -21,14 +21,12 @@ public class Event implements IEvent, Parcelable {
     private String title;
     private String owner;
     private String description;
-    private String category;
     private String startTime;
     private String location;
     private double latitude;
     private double longitude;
     private Integer minRsvps;
     private Integer maxRsvps;
-    private boolean friends_only;
     private EventStatus eventStatus;
     private List<String> rsvps;
 
@@ -39,34 +37,30 @@ public class Event implements IEvent, Parcelable {
         title = source.readString();
         owner = source.readString();
         description = source.readString();
-        category = source.readString();
         startTime = source.readString();
         location = source.readString();
         latitude = source.readDouble();
         longitude = source.readDouble();
         minRsvps = source.readInt();
         maxRsvps = source.readInt();
-        friends_only = 0 != source.readByte();
         eventStatus = (EventStatus) source.readSerializable();
         rsvps = new ArrayList<>();
         source.readStringList(rsvps);
     }
 
-    public Event(String id, String title, String owner, String description, String category,
+    public Event(String id, String title, String owner, String description,
                  String startTime, String location, double latitude, double longitude, int minRsvps,
-                 int maxRsvps, boolean friends_only, EventStatus eventStatus, List<String> rsvps) {
+                 int maxRsvps, EventStatus eventStatus, List<String> rsvps) {
         this.id = id;
         this.title = title;
         this.owner = owner;
         this.description = description;
-        this.category = category;
         this.startTime = startTime;
         this.location = location;
         this.latitude = latitude;
         this.longitude = longitude;
         this.minRsvps = minRsvps;
         this.maxRsvps = maxRsvps;
-        this.friends_only = friends_only;
         this.eventStatus = eventStatus;
         this.rsvps = rsvps;
     }
@@ -79,19 +73,17 @@ public class Event implements IEvent, Parcelable {
         this.title = title;
         this.owner = owner;
         this.description = description;
-        this.category = "";
         this.startTime = startTime;
         this.location = location;
         this.latitude = 0;
         this.longitude = 0;
         this.minRsvps = 0;
         this.maxRsvps = 0;
-        this.friends_only = false;
         this.eventStatus = EventStatus.PENDING;
         this.rsvps = new ArrayList<>();
     }
 
-    public Event(String title, String description, String category, String location, double latitude,
+    public Event(String title, String description, String location, double latitude,
                  double longitude, int minRsvps, int maxRsvps) {
         Format formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         String date = formatter.format(new Date());
@@ -99,14 +91,12 @@ public class Event implements IEvent, Parcelable {
         this.title = title;
         this.owner = Profile.getCurrentProfile().getId();
         this.description = description;
-        this.category = category;
         this.startTime = date;
         this.location = location;
         this.latitude = latitude;
         this.longitude = longitude;
         this.minRsvps = minRsvps;
         this.maxRsvps = maxRsvps;
-        this.friends_only = false;
         this.eventStatus = EventStatus.PENDING;
         this.rsvps = new ArrayList<>();
     }
@@ -149,16 +139,6 @@ public class Event implements IEvent, Parcelable {
     @Override
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Override
-    public String getCategory() {
-        return category;
-    }
-
-    @Override
-    public void setCategory(String category) {
-        this.category = category;
     }
 
     @Override
@@ -222,16 +202,6 @@ public class Event implements IEvent, Parcelable {
     }
 
     @Override
-    public boolean isFriends_only() {
-        return friends_only;
-    }
-
-    @Override
-    public void setFriends_only(boolean v) {
-        friends_only = v;
-    }
-
-    @Override
     public EventStatus getEventStatus() {
         return eventStatus;
     }
@@ -262,14 +232,12 @@ public class Event implements IEvent, Parcelable {
         dest.writeString(title);
         dest.writeString(owner);
         dest.writeString(description);
-        dest.writeString(category);
         dest.writeString(startTime);
         dest.writeString(location);
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
         dest.writeInt(minRsvps);
         dest.writeInt(maxRsvps);
-        dest.writeByte((byte) (friends_only ? 1: 0));
         dest.writeSerializable(eventStatus);
         dest.writeStringList(rsvps);
     }

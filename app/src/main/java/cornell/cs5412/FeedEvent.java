@@ -161,16 +161,6 @@ public class FeedEvent implements IEvent{
     }
 
     @Override
-    public String getCategory() {
-        return event.getCategory();
-    }
-
-    @Override
-    public void setCategory(String category) {
-        event.setCategory(category);
-    }
-
-    @Override
     public String getStartTime() {
         return event.getStartTime();
     }
@@ -230,16 +220,6 @@ public class FeedEvent implements IEvent{
     @Override
     public void setMaxRsvps(int max) {
         event.setMaxRsvps(max);
-    }
-
-    @Override
-    public boolean isFriends_only() {
-        return event.isFriends_only();
-    }
-
-    @Override
-    public void setFriends_only(boolean v) {
-        event.setFriends_only(v);
     }
 
     @Override

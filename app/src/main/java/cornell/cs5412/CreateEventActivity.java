@@ -1,6 +1,9 @@
 package cornell.cs5412;
 
-import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,15 +11,20 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class CreateEventActivity extends AppCompatActivity {
     EditText titleBox;
@@ -28,6 +36,7 @@ public class CreateEventActivity extends AppCompatActivity {
     EditText minRsvpsBox;
     EditText maxRsvpsBox;
     TextView info;
+    IEvent event;
 
     private BroadcastReceiver logoutReceiver;
 
@@ -85,6 +94,11 @@ public class CreateEventActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void showTimePickerDialog(View v) {
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.show(getFragmentManager(), "timePicker");
+    }
+
     public void create(View view) {
 //        double latitude = Double.parseDouble(latitudeBox.getText().toString());
 //        double longitude = Double.parseDouble(longitudeBox.getText().toString());
@@ -93,11 +107,56 @@ public class CreateEventActivity extends AppCompatActivity {
 //        Event event = new Event(titleBox.getText().toString(), descriptionBox.getText().toString(),
 //                categoryBox.getText().toString(), locationBox.getText().toString(), latitude, longitude,
 //                minRsvps, maxRsvps);
-        Event event = new Event("Frisbee", "it'll be fun", "Sports", "Mi casa", 10.1, 10.5, 5, 10);
+        Event event = new Event("Frisbee", "it'll be fun", "Mi casa", 10.1, 10.5, 5, 10);
         Gson gson = new Gson();
         String json = gson.toJson(event);
 
         new CreateEventTask().execute(json);
+    }
+
+    /**
+     * From Android developer's guide
+     */
+    public static class TimePickerFragment extends DialogFragment
+            implements TimePickerDialog.OnTimeSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current time as the default values for the picker
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+
+            // Create a new instance of TimePickerDialog and return it
+            return new TimePickerDialog(getActivity(), this, hour, minute,
+                    DateFormat.is24HourFormat(getActivity()));
+        }
+
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+        }
+    }
+
+    public static class DatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            // Do something with the date chosen by the user
+            GregorianCalendar cal = new GregorianCalendar(year, month, day);
+
+        }
     }
 
     private class CreateEventTask extends AsyncTask<String, Void, HttpResponse> {

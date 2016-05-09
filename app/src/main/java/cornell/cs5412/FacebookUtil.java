@@ -9,7 +9,11 @@ import android.os.AsyncTask;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
@@ -32,18 +36,30 @@ public class FacebookUtil {
     public static Bitmap getFacebookProfilePicture(String userID) throws IOException {
         URL imageUrl = new URL("https://graph.facebook.com/" + userID + "/picture?type=large");
         try {
-            return new GetProfilePicture().execute(imageUrl).get();
+            return BitmapFactory.decodeStream(new GetStream().execute(imageUrl).get());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static class GetProfilePicture extends AsyncTask<URL, Void, Bitmap> {
+    public static String getFacebookName(String userID) throws IOException, JSONException {
+        URL imageUrl = new URL("https://graph.facebook.com/" + userID + "?fields=name");
+        try {
+            InputStream stream = new GetStream().execute(imageUrl).get();
+            JSONObject obj = new JSONObject(NetworkUtil.readIt(stream, 1000));
+            return obj.getString("name");
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static class GetStream extends AsyncTask<URL, Void, InputStream> {
         @Override
-        protected Bitmap doInBackground(URL... args) {
+        protected InputStream doInBackground(URL... args) {
             try {
-                return BitmapFactory.decodeStream(args[0].openConnection().getInputStream());
+                return args[0].openConnection().getInputStream();
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
