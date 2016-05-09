@@ -5,8 +5,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.widget.TextView;
 
 import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 
 import org.json.JSONException;
@@ -43,13 +47,22 @@ public class FacebookUtil {
         return null;
     }
 
-    public static String getFacebookName(String userID) throws IOException, JSONException {
-        URL imageUrl = new URL("https://graph.facebook.com/" + userID + "?fields=name");
+    public static String getFacebookProfileField(String userID, String field) {
         try {
-            InputStream stream = new GetStream().execute(imageUrl).get();
-            JSONObject obj = new JSONObject(NetworkUtil.readIt(stream, 1000));
-            return obj.getString("name");
-        } catch (InterruptedException | ExecutionException e) {
+            return new GraphRequest(
+                    AccessToken.getCurrentAccessToken(),
+                    "/"+userID,
+                    null,
+                    HttpMethod.GET,
+                    new GraphRequest.Callback() {
+                        public void onCompleted(GraphResponse response) {}
+                    }
+            ).executeAsync().get().get(0).getJSONObject().getString(field);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;

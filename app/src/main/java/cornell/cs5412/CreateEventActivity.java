@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.view.Menu;
@@ -20,23 +21,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class CreateEventActivity extends AppCompatActivity {
+public class CreateEventActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     EditText titleBox;
     EditText descriptionBox;
-    EditText categoryBox;
     EditText locationBox;
-    EditText latitudeBox;
-    EditText longitudeBox;
     EditText minRsvpsBox;
     EditText maxRsvpsBox;
     TextView info;
     IEvent event;
+
+    GoogleApiClient mGoogleApiClient;
 
     private BroadcastReceiver logoutReceiver;
 
@@ -45,12 +49,16 @@ public class CreateEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */,
+                        this /* OnConnectionFailedListener */)
+                .addApi(Drive.API)
+                .addScope(Drive.SCOPE_FILE)
+                .build();
+
         titleBox = (EditText) findViewById(R.id.event_title_box);
         descriptionBox = (EditText) findViewById(R.id.description_box);
-        categoryBox = (EditText) findViewById(R.id.category_box);
         locationBox = (EditText) findViewById(R.id.location_box);
-        latitudeBox = (EditText) findViewById(R.id.latitude_box);
-        longitudeBox = (EditText) findViewById(R.id.longitude_box);
         minRsvpsBox = (EditText) findViewById(R.id.minRsvps_box);
         maxRsvpsBox = (EditText) findViewById(R.id.maxRsvps_box);
         info = (TextView) findViewById(R.id.create_event_label);
@@ -99,6 +107,11 @@ public class CreateEventActivity extends AppCompatActivity {
         newFragment.show(getFragmentManager(), "timePicker");
     }
 
+    public void showDatePickerDialog(View v) {
+        DialogFragment newFragment = new DatePickerFragment();
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
     public void create(View view) {
 //        double latitude = Double.parseDouble(latitudeBox.getText().toString());
 //        double longitude = Double.parseDouble(longitudeBox.getText().toString());
@@ -113,6 +126,9 @@ public class CreateEventActivity extends AppCompatActivity {
 
         new CreateEventTask().execute(json);
     }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 
     /**
      * From Android developer's guide

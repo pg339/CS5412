@@ -62,7 +62,7 @@ public class FeedEvent implements IEvent{
         rsvpCountBox.setPadding(0, MiscHelpers.pixToDp(context, 10), 0, 0);
         creatorBox = new TextView(context);
         creatorBox.setId(View.generateViewId());
-        creatorBox.setText("By " + event.getOwner());
+        creatorBox.setText("By " + FacebookUtil.getFacebookProfileField(event.getOwner(), "name"));
         creatorBox.setGravity(Gravity.BOTTOM);
         creatorBox.setTextSize(TypedValue.COMPLEX_UNIT_PX, context.getResources().getDimension(R.dimen.display_text_size));
         creatorBox.setTextColor(Color.BLACK);

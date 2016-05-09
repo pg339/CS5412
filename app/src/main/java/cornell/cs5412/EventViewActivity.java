@@ -56,8 +56,8 @@ public class EventViewActivity extends AppCompatActivity {
         countButton = (Button) findViewById(R.id.event_view_rsvp_count_button);
 
         if (event.getOwner().equals(user)) {
-            cancel = (Button) getLayoutInflater().inflate(R.layout.cancel_event_button, null);
-            bottom.addView(cancel);
+            RelativeLayout cancelLayout = (RelativeLayout) View.inflate(this, R.layout.cancel_event_button, bottom);
+            cancel = (Button) findViewById(R.id.event_view_cancel_button);
             cancel.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     //TODO: Cancel event
@@ -87,7 +87,7 @@ public class EventViewActivity extends AppCompatActivity {
 
         titleView.setText(event.getTitle());
         descriptionView.setText(event.getDescription());
-        creatorView.setText("Hosted by "+event.getOwner());
+        creatorView.setText("Hosted by "+FacebookUtil.getFacebookProfileField(event.getOwner(), "name"));
         String rsvpCount = ""+event.getRsvps().size();
         if (event.getMaxRsvps() != null) {
             rsvpCount += "/"+event.getMaxRsvps();

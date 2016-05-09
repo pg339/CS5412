@@ -1,9 +1,12 @@
 package cornell.cs5412;
 
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.facebook.Profile;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -31,6 +34,19 @@ public class Event implements IEvent, Parcelable {
     private List<String> rsvps;
 
     public static Parcelable.Creator<Event> CREATOR = new Creator();
+
+    public Event(GoogleApiClient client) {
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        String date = formatter.format(new Date());
+        this.id = Profile.getCurrentProfile().getId() + ":" + date;
+        try {
+            Location location = LocationServices.FusedLocationApi.getLastLocation(client);
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
+        } catch (SecurityException e) {
+
+        }
+    }
 
     public Event(Parcel source) {
         id = source.readString();

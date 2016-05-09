@@ -26,16 +26,16 @@
         android:paddingStart="@dimen/margin"
         android:paddingEnd="@dimen/margin"
         android:maxLength="40"
+        android:layout_margin="@dimen/margin"
         android:hint="Event name" />
 
     <ImageView
         android:id="@+id/description_box_ic"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_alignTop="@id/description_box"
-        android:layout_alignBottom="@id/description_box"
         android:layout_below="@id/event_title_box"
-        android:src="@drawable/ic_event_note_black_24dp" />
+        android:src="@drawable/ic_event_note_black_24dp"
+        android:layout_marginStart="@dimen/margin"/>
 
     <EditText
         android:id="@+id/description_box"
@@ -47,18 +47,20 @@
         android:singleLine="true"
         android:layout_below="@id/event_title_box"
         android:layout_toEndOf="@id/description_box_ic"
-        android:paddingEnd="@dimen/margin"
         android:maxLength="1000"
+        android:layout_alignTop="@id/description_box_ic"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
         android:hint="Description" />
 
     <ImageView
         android:id="@+id/location_box_ic"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_alignTop="@id/location_box"
-        android:layout_alignBottom="@id/location_box"
         android:layout_below="@id/description_box_ic"
-        android:src="@drawable/ic_room_black_24dp" />
+        android:src="@drawable/ic_room_black_24dp"
+        android:layout_marginTop="@dimen/margin"
+        android:layout_marginStart="@dimen/margin"/>
 
     <EditText
         android:id="@+id/location_box"
@@ -70,16 +72,19 @@
         android:singleLine="true"
         android:layout_below="@id/description_box"
         android:layout_toEndOf="@id/location_box_ic"
+        android:layout_alignTop="@id/location_box_ic"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
         android:hint="Location" />
 
     <ImageView
         android:id="@+id/date_box_ic"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_alignTop="@id/date_box"
-        android:layout_alignBottom="@id/date_box"
         android:layout_below="@id/location_box_ic"
-        android:src="@drawable/ic_insert_invitation_black_24dp" />
+        android:src="@drawable/ic_insert_invitation_black_24dp"
+        android:layout_marginTop="@dimen/margin"
+        android:layout_marginStart="@dimen/margin" />
 
     <TextView
         android:id="@+id/date_box"
@@ -90,8 +95,35 @@
         android:singleLine="true"
         android:layout_below="@id/location_box"
         android:layout_toEndOf="@id/date_box_ic"
-        android:onClick="showTimePickerDialog"
+        android:onClick="showDatePickerDialog"
+        android:layout_alignTop="@id/date_box_ic"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
         android:hint="Today" />
+
+    <ImageView
+        android:id="@+id/time_box_ic"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_below="@id/date_box_ic"
+        android:src="@drawable/ic_query_builder_black_24dp"
+        android:layout_marginTop="@dimen/margin"
+        android:layout_marginStart="@dimen/margin" />
+
+    <TextView
+        android:id="@+id/time_box"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:layout_below="@id/date_box"
+        android:layout_toEndOf="@id/date_box_ic"
+        android:onClick="showTimePickerDialog"
+        android:layout_alignTop="@id/time_box_ic"
+        android:layout_marginStart="@dimen/margin"
+        android:layout_marginEnd="@dimen/margin"
+        android:hint="Time" />
 
     <EditText
         android:id="@+id/minRsvps_box"
@@ -101,7 +133,7 @@
         android:inputType="number"
         android:imeOptions="actionNext"
         android:singleLine="true"
-        android:layout_below="@id/date_box"
+        android:layout_below="@id/time_box"
         android:hint="Min RSVP's" />
 
     <EditText

@@ -168,9 +168,9 @@ public class FeedActivity extends AppCompatActivity {
 
     public FeedEvent[] getEvents() {
         //placeholder event samples
-        Event event1 = new Event("My event", "Pablo", "Fun in the sun", "Saturday, April 23rd at 8 PM", "David L. Call Auditorium");
+        Event event1 = new Event("My event", Profile.getCurrentProfile().getId(), "Fun in the sun", "Saturday, April 23rd at 8 PM", "David L. Call Auditorium");
         Event event2 = new Event("My super long and obnoxious event name hahahahahahahahahahhahaahahahahahahaa",
-                "Pablo Garciaaaaaaaaaaaaaaaaaaaaa-Quesada",
+                Profile.getCurrentProfile().getId(),
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ex ante, tempor vel pellentesque ut, cursus at ligula. Sed purus nisi, fermentum nec felis id, viverra consequat nisi. Sed fermentum convallis purus, eu viverra enim feugiat sed. Proin sit amet pulvinar dui. Nam nibh nisl, scelerisque vel elementum vitae, iaculis a arcu. Ut convallis nunc non metus pellentesque semper. Cras eget elit lorem. Aliquam erat volutpat. Praesent sollicitudin imperdiet condimentum. Sed a purus at dolor rhoncus elementum a et ligula. Duis odio tortor, ornare ac elementum ac, varius id nunc. Etiam blandit gravida urna in cursus. Praesent ultricies tortor et arcu luctus, bibendum consectetur massa eleifend. Proin fringilla lorem vel feugiat maximus. Vivamus nec lobortis ante. Phasellus dictum fringilla semper.\n" +
                         "\n" +
                         "Mauris sit amet elit interdum, egestas elit at, luctus purus. Donec sed lorem vel tellus imperdiet efficitur. Cras dapibus id sapien ut sodales. Nulla id eleifend ex. Pellentesque ante ipsum, ullamcorper vel posuere nec, venenatis non ante. Nullam ut sem eget erat posuere accumsan tincidunt id justo. Etiam pulvinar sagittis nulla vitae fringilla. Donec a massa eu tortor aliquam interdum. Morbi eget congue neque, eget maximus justo. Suspendisse et urna ac tortor tristique porta nec eu dui. Fusce in commodo dui. Cras eu venenatis mauris. Aenean sed tempor libero, consectetur ornare lacus. Sed nec augue purus. Nam non erat et neque semper porttitor. Nulla a lobortis dolor, volutpat posuere est.\n" +
