@@ -47,7 +47,6 @@
         android:singleLine="true"
         android:layout_below="@id/event_title_box"
         android:layout_toEndOf="@id/description_box_ic"
-        android:paddingStart="@dimen/margin"
         android:paddingEnd="@dimen/margin"
         android:maxLength="1000"
         android:hint="Description" />
