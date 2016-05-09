@@ -4,7 +4,8 @@
     android:id="@+id/event_view_parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cornell.cs5412.EventViewActivity">
+    tools:context="cornell.cs5412.EventViewActivity"
+    android:fitsSystemWindows="true">
 
     <RelativeLayout
         android:id="@+id/event_view_bottom"
@@ -47,7 +48,8 @@
             android:layout_height="?android:attr/actionBarSize"
             android:elevation="@dimen/low_elevation"
             android:background="@color/primary"
-            android:gravity="start">
+            android:gravity="start"
+            android:title="@string/app_name">
 
         </Toolbar>
 

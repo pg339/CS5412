@@ -1,9 +1,6 @@
 package cornell.cs5412;
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,18 +9,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.text.format.DateFormat;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.TimePicker;
+import android.widget.Toolbar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 
@@ -31,14 +23,23 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class CreateEventActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class CreateEventActivity extends AppCompatActivity implements
+        GoogleApiClient.OnConnectionFailedListener,
+        DatePickerFragment.OnCompleteListener,
+        TimePickerFragment.OnCompleteListener {
     EditText titleBox;
     EditText descriptionBox;
     EditText locationBox;
+    TextView dateBox;
+    TextView timeBox;
     EditText minRsvpsBox;
     EditText maxRsvpsBox;
     TextView info;
-    IEvent event;
+    int hour;
+    int minute;
+    int day;
+    int month;
+    int year;
 
     GoogleApiClient mGoogleApiClient;
 
@@ -52,16 +53,31 @@ public class CreateEventActivity extends AppCompatActivity implements GoogleApiC
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */,
                         this /* OnConnectionFailedListener */)
-                .addApi(Drive.API)
-                .addScope(Drive.SCOPE_FILE)
+                .addApi(LocationServices.API)
                 .build();
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.event_creation_toolbar);
+        setActionBar(toolbar);
 
         titleBox = (EditText) findViewById(R.id.event_title_box);
         descriptionBox = (EditText) findViewById(R.id.description_box);
         locationBox = (EditText) findViewById(R.id.location_box);
         minRsvpsBox = (EditText) findViewById(R.id.minRsvps_box);
         maxRsvpsBox = (EditText) findViewById(R.id.maxRsvps_box);
+        dateBox = (TextView) findViewById(R.id.date_box);
+        timeBox = (TextView) findViewById(R.id.time_box);
         info = (TextView) findViewById(R.id.create_event_label);
+
+        Calendar c = Calendar.getInstance();
+        dateBox.setText(java.text.DateFormat.getDateInstance().format(c.getTime()));
+        day = c.get(Calendar.DAY_OF_MONTH);
+        month = c.get(Calendar.MONTH);
+        year = c.get(Calendar.YEAR);
+        hour = c.get(Calendar.HOUR);
+        minute = c.get(Calendar.MINUTE);
+        timeBox.setText((hour > 12 ? hour-12: hour)+":"+
+                (minute < 10 ? "0"+minute : minute) +
+                (hour>12 ? " PM" : " AM"));
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(LoginActivity.LOGOUT_ACTION);
@@ -78,28 +94,6 @@ public class CreateEventActivity extends AppCompatActivity implements GoogleApiC
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(logoutReceiver);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_create_event, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public void showTimePickerDialog(View v) {
@@ -130,49 +124,22 @@ public class CreateEventActivity extends AppCompatActivity implements GoogleApiC
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 
-    /**
-     * From Android developer's guide
-     */
-    public static class TimePickerFragment extends DialogFragment
-            implements TimePickerDialog.OnTimeSetListener {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current time as the default values for the picker
-            final Calendar c = Calendar.getInstance();
-            int hour = c.get(Calendar.HOUR_OF_DAY);
-            int minute = c.get(Calendar.MINUTE);
-
-            // Create a new instance of TimePickerDialog and return it
-            return new TimePickerDialog(getActivity(), this, hour, minute,
-                    DateFormat.is24HourFormat(getActivity()));
-        }
-
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-
-        }
+    @Override
+    public void onCompleteTimePicker(int hour, int minute) {
+        timeBox.setText((hour > 12 ? hour-12: hour)+":"+
+                (minute < 10 ? "0"+minute : minute) +
+                (hour>12 ? " PM" : " AM"));
+        this.hour = hour;
+        this.minute = minute;
     }
 
-    public static class DatePickerFragment extends DialogFragment
-            implements DatePickerDialog.OnDateSetListener {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current date as the default date in the picker
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-
-            // Create a new instance of DatePickerDialog and return it
-            return new DatePickerDialog(getActivity(), this, year, month, day);
-        }
-
-        public void onDateSet(DatePicker view, int year, int month, int day) {
-            // Do something with the date chosen by the user
-            GregorianCalendar cal = new GregorianCalendar(year, month, day);
-
-        }
+    @Override
+    public void onCompleteDatePicker(int year, int month, int day) {
+        GregorianCalendar cal = new GregorianCalendar(year, month, day);
+        dateBox.setText(java.text.DateFormat.getDateInstance().format(cal.getTime()));
+        this.year = year;
+        this.month = month;
+        this.day = day;
     }
 
     private class CreateEventTask extends AsyncTask<String, Void, HttpResponse> {

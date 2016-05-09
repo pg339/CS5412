@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
@@ -41,6 +42,9 @@ public class EventViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_view);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.event_view_toolbar);
+        setActionBar(toolbar);
 
         Intent intent = getIntent();
         event = intent.getParcelableExtra(EVENT_EXTRA);
