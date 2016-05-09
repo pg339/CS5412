@@ -22,4 +22,6 @@
     <dimen name="low_elevation">4dp</dimen>
     <dimen name="med_elevation">8dp</dimen>
     <dimen name="high_elevation">12dp</dimen>
+    <dimen name="icon_radius">42dp</dimen>
+    <dimen name="icon_top_padding">6dp</dimen>
 </resources>

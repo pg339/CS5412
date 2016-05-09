@@ -208,7 +208,7 @@ public class FeedEvent implements IEvent{
     }
 
     @Override
-    public void setMinRsvps(int min) {
+    public void setMinRsvps(Integer min) {
         event.setMinRsvps(min);
     }
 
@@ -218,7 +218,7 @@ public class FeedEvent implements IEvent{
     }
 
     @Override
-    public void setMaxRsvps(int max) {
+    public void setMaxRsvps(Integer max) {
         event.setMaxRsvps(max);
     }
 
@@ -230,6 +230,11 @@ public class FeedEvent implements IEvent{
     @Override
     public void setEventStatus(EventStatus status) {
         event.setEventStatus(status);
+    }
+
+    @Override
+    public void updateEventStatus() {
+        event.updateEventStatus();
     }
 
     @Override

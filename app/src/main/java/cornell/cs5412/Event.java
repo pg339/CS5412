@@ -35,17 +35,12 @@ public class Event implements IEvent, Parcelable {
 
     public static Parcelable.Creator<Event> CREATOR = new Creator();
 
-    public Event(GoogleApiClient client) {
-        Format formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        String date = formatter.format(new Date());
+    public Event() {
+        String date = MiscHelpers.formatDateForNetwork(new Date());
         this.id = Profile.getCurrentProfile().getId() + ":" + date;
-        try {
-            Location location = LocationServices.FusedLocationApi.getLastLocation(client);
-            longitude = location.getLongitude();
-            latitude = location.getLatitude();
-        } catch (SecurityException e) {
-
-        }
+        this.owner = Profile.getCurrentProfile().getId();
+        rsvps = new ArrayList<>();
+        eventStatus = EventStatus.PENDING;
     }
 
     public Event(Parcel source) {
@@ -83,8 +78,7 @@ public class Event implements IEvent, Parcelable {
 
     //For testing previews
     public Event(String title, String owner, String description, String startTime, String location) {
-        Format formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        String date = formatter.format(new Date());
+        String date = MiscHelpers.formatDateForNetwork(new Date());
         this.id = Profile.getCurrentProfile().getId() + ":" + date;
         this.title = title;
         this.owner = owner;
@@ -203,7 +197,7 @@ public class Event implements IEvent, Parcelable {
     }
 
     @Override
-    public void setMinRsvps(int min) {
+    public void setMinRsvps(Integer min) {
         minRsvps = min;
     }
 
@@ -213,7 +207,7 @@ public class Event implements IEvent, Parcelable {
     }
 
     @Override
-    public void setMaxRsvps(int max) {
+    public void setMaxRsvps(Integer max) {
         this.maxRsvps = max;
     }
 
@@ -225,6 +219,17 @@ public class Event implements IEvent, Parcelable {
     @Override
     public void setEventStatus(EventStatus status) {
         eventStatus = status;
+    }
+
+    @Override
+    public void updateEventStatus() {
+        if (eventStatus != EventStatus.CANCELLED) {
+            if (minRsvps == null) {
+                eventStatus = EventStatus.HAPPENING;
+            } else {
+                eventStatus = rsvps.size() >= minRsvps ? EventStatus.HAPPENING : EventStatus.PENDING;
+            }
+        }
     }
 
     @Override

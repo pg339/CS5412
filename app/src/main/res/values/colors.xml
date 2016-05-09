@@ -13,4 +13,5 @@
     <item name="accent" type="color">#c0caff</item>
     <item name="transparent" type="color">#0000</item>
     <item name="dark_gray" type="color">#a6a6a6</item>
+    <item name="error" type="color">#ff0000</item>
 </resources>

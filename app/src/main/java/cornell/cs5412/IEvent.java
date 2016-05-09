@@ -20,11 +20,12 @@ public interface IEvent {
     double getLongitude();
     void setLongitude(double lon);
     Integer getMinRsvps();
-    void setMinRsvps(int min);
+    void setMinRsvps(Integer min);
     Integer getMaxRsvps();
-    void setMaxRsvps(int max);
+    void setMaxRsvps(Integer max);
     EventStatus getEventStatus();
     void setEventStatus(EventStatus status);
+    void updateEventStatus();
     List<String> getRsvps();
     void setRsvps(List<String> rsvps);
 }

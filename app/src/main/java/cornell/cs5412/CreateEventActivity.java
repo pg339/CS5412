@@ -1,15 +1,22 @@
 package cornell.cs5412;
 
+import android.Manifest;
 import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toolbar;
@@ -21,6 +28,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class CreateEventActivity extends AppCompatActivity implements
@@ -35,26 +43,66 @@ public class CreateEventActivity extends AppCompatActivity implements
     EditText minRsvpsBox;
     EditText maxRsvpsBox;
     TextView info;
+    Button createButton;
+    TextView label;
     int hour;
     int minute;
     int day;
     int month;
     int year;
+    double longitude;
+    double latitute;
 
-    GoogleApiClient mGoogleApiClient;
+    private final LocationListener mLocationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(final Location location) {
+            //your code here
+            longitude = location.getLongitude();
+            latitute = location.getLatitude();
+        }
 
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            if (label.getText().toString().equals(getResources().getString(R.string.provider_off_message))) {
+                label.setText("");
+            }
+            createButton.setClickable(true);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            label.setText(getResources().getString(R.string.provider_off_message));
+            createButton.setClickable(false);
+        }
+    };
+
+    private LocationManager mLocationManager;
     private BroadcastReceiver logoutReceiver;
+    private static final int LOCATION_REFRESH_TIME = 60000;
+    private static final int LOCATION_REFRESH_DISTANCE = 500;
+    public static final int PERMISSIONS_REQUEST_FINE_LOCATION = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */,
-                        this /* OnConnectionFailedListener */)
-                .addApi(LocationServices.API)
-                .build();
+        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_FINE_LOCATION);
+        }
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                LOCATION_REFRESH_DISTANCE, mLocationListener);
+        Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        latitute = location.getLatitude();
+        longitude = location.getLongitude();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.event_creation_toolbar);
         setActionBar(toolbar);
@@ -67,13 +115,15 @@ public class CreateEventActivity extends AppCompatActivity implements
         dateBox = (TextView) findViewById(R.id.date_box);
         timeBox = (TextView) findViewById(R.id.time_box);
         info = (TextView) findViewById(R.id.create_event_label);
+        createButton = (Button) findViewById(R.id.create_event_button);
+        label = (TextView) findViewById(R.id.create_event_label);
 
         Calendar c = Calendar.getInstance();
         dateBox.setText(java.text.DateFormat.getDateInstance().format(c.getTime()));
         day = c.get(Calendar.DAY_OF_MONTH);
         month = c.get(Calendar.MONTH);
         year = c.get(Calendar.YEAR);
-        hour = c.get(Calendar.HOUR);
+        hour = c.get(Calendar.HOUR_OF_DAY);
         minute = c.get(Calendar.MINUTE);
         timeBox.setText((hour > 12 ? hour-12: hour)+":"+
                 (minute < 10 ? "0"+minute : minute) +
@@ -107,18 +157,40 @@ public class CreateEventActivity extends AppCompatActivity implements
     }
 
     public void create(View view) {
-//        double latitude = Double.parseDouble(latitudeBox.getText().toString());
-//        double longitude = Double.parseDouble(longitudeBox.getText().toString());
-//        int minRsvps = Integer.parseInt(minRsvpsBox.getText().toString());
-//        int maxRsvps = Integer.parseInt(maxRsvpsBox.getText().toString());
-//        Event event = new Event(titleBox.getText().toString(), descriptionBox.getText().toString(),
-//                categoryBox.getText().toString(), locationBox.getText().toString(), latitude, longitude,
-//                minRsvps, maxRsvps);
-        Event event = new Event("Frisbee", "it'll be fun", "Mi casa", 10.1, 10.5, 5, 10);
-        Gson gson = new Gson();
-        String json = gson.toJson(event);
+        //TODO: This and figure out what to do with min and max guests
+        Event event = new Event();
+        event.setTitle(titleBox.getText().toString());
+        event.setDescription(descriptionBox.getText().toString());
+        GregorianCalendar c = new GregorianCalendar(year, month, day, hour, minute);
+        event.setStartTime(MiscHelpers.formatDateForNetwork(c.getTime()));
+        event.setLocation(locationBox.getText().toString());
+        String min = minRsvpsBox.getText().toString();
+        event.setMinRsvps(minRsvpsBox.getText().toString().equals("") ? null : Integer.parseInt(min));
+        String max = maxRsvpsBox.getText().toString();
+        event.setMaxRsvps(maxRsvpsBox.getText().toString().equals("") ? null : Integer.parseInt(max));
+        event.updateEventStatus();
+        event.setLatitude(latitute);
+        event.setLongitude(longitude);
 
-        new CreateEventTask().execute(json);
+        String errorMessage = "";
+        if (Calendar.getInstance().getTime().after(c.getTime())) {
+            errorMessage += "Please select a start time in the future\n";
+        } if (event.getMinRsvps() != null && event.getMaxRsvps() != null && event.getMinRsvps() > event.getMaxRsvps()) {
+            errorMessage += "Please select a valid range of guests\n";
+        } if (event.getTitle().length() == 0) {
+            errorMessage += "Please provide a title for the event\n";
+        } if (event.getLocation().length() == 0)  {
+            errorMessage += "Please provide a location for the event";
+        } if (errorMessage.length() > 0) {
+            label.setText(errorMessage);
+            return;
+        } else {
+            //        Event event = new Event("Frisbee", "it'll be fun", "Mi casa", 10.1, 10.5, 5, 10);
+            Gson gson = new Gson();
+            String json = gson.toJson(event);
+
+            new CreateEventTask().execute(json);
+        }
     }
 
     @Override
