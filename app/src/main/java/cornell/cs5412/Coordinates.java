@@ -5,9 +5,11 @@ package cornell.cs5412;
  * Created by Pablo on 3/9/2016.
  */
 public class Coordinates {
-    public float[] coordinates;
+    public double lat;
+    public double lon;
 
-    public Coordinates(float[] coordinates) {
-        this.coordinates = coordinates;
+    public Coordinates(double lat, double lon) {
+        this.lat = lat;
+        this.lon = lon;
     }
 }

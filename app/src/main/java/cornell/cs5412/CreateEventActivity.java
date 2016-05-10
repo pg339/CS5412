@@ -157,7 +157,6 @@ public class CreateEventActivity extends AppCompatActivity implements
     }
 
     public void create(View view) {
-        //TODO: This and figure out what to do with min and max guests
         Event event = new Event();
         event.setTitle(titleBox.getText().toString());
         event.setDescription(descriptionBox.getText().toString());
@@ -219,9 +218,9 @@ public class CreateEventActivity extends AppCompatActivity implements
         @Override
         protected HttpResponse doInBackground(String... args) {
             try {
-                String url = getString(R.string.create_event_url);
+                String url = getString(R.string.base_api_url)+getString(R.string.create_event_url);
                 HttpResponse response = NetworkUtil.httpPost(url, args[0]);
-                if (response.responseCode >= 400 && response.responseCode < 600) {
+                if (response == null || (response.responseCode >= 400 && response.responseCode < 600)) {
                     cancel(true);
                     return null;
                 }

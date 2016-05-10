@@ -51,7 +51,7 @@ public class LoginActivity extends Activity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                new CreateAccountTask().execute("pablo");
+                new CreateAccountTask().execute(Profile.getCurrentProfile().getId());
             }
 
             @Override
@@ -106,9 +106,9 @@ public class LoginActivity extends Activity {
         @Override
         protected HttpResponse doInBackground(String... args) {
             try {
-                String url = getString(R.string.create_account_url);
-                HttpResponse response = NetworkUtil.httpPost(url + args[0], "");
-                if (response.responseCode >= 500 && response.responseCode < 600) {
+                String url = getString(R.string.base_api_url)+getString(R.string.create_account_url);
+                HttpResponse response = NetworkUtil.httpPost(url, "\""+args[0]+"\"");
+                if (response.responseCode >= 400 && response.responseCode < 600) {
                     cancel(true);
                     return null;
                 }
@@ -129,6 +129,7 @@ public class LoginActivity extends Activity {
             }
             else {
                 loginStatus.setText("Response came back empty");
+                LoginManager.getInstance().logOut();
             }
         }
 

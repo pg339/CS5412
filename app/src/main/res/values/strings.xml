@@ -1,8 +1,13 @@
 <resources>
     <string name="app_name">CS5412</string>
 
-    <string name="create_account_url">"http://10.148.1.181:8080/api/account/"</string>
-    <string name="create_event_url">"http://10.148.1.181:8080/api/event"</string>
+    <string name="base_api_url">"http://ec2-54-175-7-114.compute-1.amazonaws.com</string>
+    <!--<string name="base_api_url">"128.84.72.22:57945</string>-->
+    <string name="create_account_url">/api/users"</string>
+    <string name="create_event_url">/api/events"</string>
+    <string name="rsvp_url">api/events/rsvp/</string>
+    <string name="unrsvp_url">api/events/unrsvp/</string>
+    <!--check whatsup with "'s-->
     <string name="action_settings">Settings</string>
     <string name="title_activity_feed">FeedActivity</string>
     <string name="facebook_app_id">1570134529971692</string>

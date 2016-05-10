@@ -46,20 +46,17 @@ public class NetworkUtil {
             conn.setReadTimeout(10000 /* milliseconds */);
             conn.setConnectTimeout(15000 /* milliseconds */);
             conn.setRequestMethod(method);
-            if ((method.equals("POST") || method.equals("PUT")) && content != null && content.length() > 0) {
-                conn.setDoOutput(true);
-                conn.setUseCaches(false);
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setRequestProperty("Accept", "application/json");
-                conn.setRequestProperty("Host", "android.schoolportal.gr");
+            conn.setDoOutput(true);
+            conn.setUseCaches(false);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Host", "ec2-54-175-7-114.compute-1.amazonaws.com");
 
-                OutputStream out = new DataOutputStream(conn.getOutputStream());
-                out.write(content.getBytes("UTF-8"));
-                out.flush();
-                out.close();
-            } else {
-                conn.setDoInput(true);
-            }
+            OutputStream out = new DataOutputStream(conn.getOutputStream());
+            out.write(content.getBytes("UTF-8"));
+            out.flush();
+            out.close();
+
 
             // Starts the query
             conn.connect();
@@ -81,8 +78,8 @@ public class NetworkUtil {
         }
     }
 
-    public static HttpResponse httpGet(String myurl) throws IOException {
-        return httpCall(myurl, "GET", "");
+    public static HttpResponse httpGet(String myurl, String content) throws IOException {
+        return httpCall(myurl, "GET", content);
     }
 
     public static HttpResponse httpPut(String myurl, String content) throws IOException {
