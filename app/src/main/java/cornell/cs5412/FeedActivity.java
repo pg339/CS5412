@@ -1,7 +1,6 @@
 package cornell.cs5412;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,23 +15,19 @@ import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toolbar;
-
-import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
 import com.facebook.Profile;
-import com.facebook.appevents.AppEventsLogger;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class FeedActivity extends AppCompatActivity {
@@ -96,7 +91,7 @@ public class FeedActivity extends AppCompatActivity {
         }
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
                 LOCATION_REFRESH_DISTANCE, mLocationListener);
-        Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location location = MiscHelpers.getLastKnownLocation(mLocationManager);
         latitute = location.getLatitude();
         longitude = location.getLongitude();
 
@@ -111,7 +106,7 @@ public class FeedActivity extends AppCompatActivity {
         try {
             dAdapter = new DrawerAdapter(getResources().getStringArray(R.array.drawer_options),
                     ICONS, Profile.getCurrentProfile().getName(),
-                    FacebookUtil.getFacebookProfilePicture(Profile.getCurrentProfile().getId()));
+                    FacebookUtil.getFacebookProfilePicture(Profile.getCurrentProfile().getId(), getApplicationContext()));
             dRecyclerView.setAdapter(dAdapter);
             dLayoutManager = new LinearLayoutManager(this);
             dRecyclerView.setLayoutManager(dLayoutManager);
@@ -130,6 +125,7 @@ public class FeedActivity extends AppCompatActivity {
                                         label.setText("");
                                         setFeedEvents(events);
                                     }
+                                    drawer.closeDrawers();
                                     break;
                                 case "Events I'm attending":
                                     events = getEventsImAttending();
@@ -140,6 +136,7 @@ public class FeedActivity extends AppCompatActivity {
                                         label.setText("");
                                         setFeedEvents(events);
                                     }
+                                    drawer.closeDrawers();
                                     break;
                                 case "Newsfeed":
                                     events = getFeedEvents();
@@ -150,6 +147,7 @@ public class FeedActivity extends AppCompatActivity {
                                         label.setText("");
                                         setFeedEvents(events);
                                     }
+                                    drawer.closeDrawers();
                                     break;
                                 case "Log out":
                                     FacebookUtil.logout(view.getContext());
@@ -166,6 +164,19 @@ public class FeedActivity extends AppCompatActivity {
             });
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        events = getFeedEvents();
+        if (events == null || events.length == 0) {
+            clearFeed();
+            label.setText(getString(R.string.empty_feed_text));
+        } else {
+            label.setText("");
+            setFeedEvents(events);
         }
     }
 
@@ -256,15 +267,15 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     public FeedEvent[] getFeedEvents() {
-        //placeholder event samples
-        Gson gson = new Gson();
-        Coordinates coordinates = new Coordinates(latitute, longitude);
-        String in = gson.toJson(coordinates);
+        String in = "?lat="+latitute+"&lon="+longitude;
         try {
-            Feed feed = new GetMainFeedTask().execute(in).get();
-            FeedEvent[] feedEvents = new FeedEvent[feed.events.length];
+            List<Event> feed = new GetMainFeedTask().execute(in).get();
+            if (feed == null) {
+                return null;
+            }
+            FeedEvent[] feedEvents = new FeedEvent[feed.size()];
             for (int i=0; i<feedEvents.length; i++) {
-                feedEvents[i] = new FeedEvent(getApplicationContext(), feed.events[i]);
+                feedEvents[i] = new FeedEvent(getApplicationContext(), feed.get(i));
             }
             return feedEvents;
         } catch (InterruptedException | ExecutionException e) {
@@ -288,19 +299,21 @@ public class FeedActivity extends AppCompatActivity {
 //                new FeedEvent(getApplicationContext(), event2)};
     }
 
-    private class GetMainFeedTask extends AsyncTask<String, Void, Feed> {
+    private class GetMainFeedTask extends AsyncTask<String, Void, List<Event>> {
 
         @Override
-        protected Feed doInBackground(String... args) {
+        protected List<Event> doInBackground(String... args) {
             try {
-                String url = getString(R.string.base_api_url)+getString(R.string.create_event_url);
-                HttpResponse response = NetworkUtil.httpGet(url, args[0]);
+                String url = getString(R.string.base_api_url)+getString(R.string.get_feed_url);
+                HttpResponse response = NetworkUtil.httpGet(url+args[0]);
                 if (response == null || (response.responseCode >= 400 && response.responseCode < 600)) {
                     cancel(true);
                     return null;
                 }
                 Gson gson = new Gson();
-                return gson.fromJson(response.content, Feed.class);
+                Type type = new TypeToken<List<Event>>(){}.getType();
+                List<Event> events = gson.fromJson(response.content, type);
+                return events;
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;

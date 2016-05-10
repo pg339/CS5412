@@ -5,14 +5,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
-import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -68,7 +66,7 @@ public class NetworkUtil {
             is = conn.getInputStream();
 
             // Convert the InputStream into a string
-            String contentAsString = readIt(is, len);
+            String contentAsString = readIt(is);
             return new HttpResponse(contentAsString, response);
 
             // Makes sure that the InputStream is closed after the app is
@@ -81,8 +79,8 @@ public class NetworkUtil {
         }
     }
 
-    public static HttpResponse httpGet(String myurl, String content) throws IOException {
-        return httpCall(myurl, "GET", content);
+    public static HttpResponse httpGet(String myurl) throws IOException {
+        return httpCall(myurl, "GET", "");
     }
 
     public static HttpResponse httpPut(String myurl, String content) throws IOException {
@@ -95,10 +93,17 @@ public class NetworkUtil {
 
     // Reads an InputStream and converts it to a String of length len.
     // From Android developer training "Connecting to the Network"
-    public static String readIt(InputStream stream, int len) throws IOException {
-        Reader reader = new InputStreamReader(stream, "UTF-8");
-        char[] buffer = new char[len];
-        reader.read(buffer);
-        return new String(buffer);
+    public static String readIt(InputStream stream) throws IOException {
+        BufferedReader r = new BufferedReader(new InputStreamReader(stream));
+        StringBuilder total = new StringBuilder();
+        String line;
+        while ((line = r.readLine()) != null) {
+            total.append(line).append('\n');
+        }
+        String res = total.toString();
+        if (res.length() == 0) {
+            return res;
+        }
+        return res.substring(0, res.length()-1);
     }
 }

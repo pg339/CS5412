@@ -33,7 +33,7 @@ public class FeedEvent implements IEvent{
         titleBox.setPadding(0, 0, MiscHelpers.pixToDp(context, 10), 0);
         dtlBox = new TextView(context);
         dtlBox.setId(View.generateViewId());
-        dtlBox.setText(event.getStartTime() + "\n" + event.getLocation());
+        dtlBox.setText(MiscHelpers.makeDatePretty(event.getStartTime()) + "\n" + event.getLocation());
         dtlBox.setGravity(Gravity.BOTTOM);
         dtlBox.setTextSize(TypedValue.COMPLEX_UNIT_PX, context.getResources().getDimension(R.dimen.display_text_size));
         dtlBox.setTextColor(Color.BLACK);

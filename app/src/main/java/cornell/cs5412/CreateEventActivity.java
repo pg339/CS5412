@@ -102,7 +102,7 @@ public class CreateEventActivity extends AppCompatActivity implements
         }
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
                 LOCATION_REFRESH_DISTANCE, mLocationListener);
-        Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location location = MiscHelpers.getLastKnownLocation(mLocationManager);
         latitute = location.getLatitude();
         longitude = location.getLongitude();
 
@@ -159,6 +159,7 @@ public class CreateEventActivity extends AppCompatActivity implements
     }
 
     public void create(View view) {
+        label.setText("");
         Event event = new Event();
         event.setTitle(titleBox.getText().toString());
         event.setDescription(descriptionBox.getText().toString());
@@ -178,6 +179,8 @@ public class CreateEventActivity extends AppCompatActivity implements
             errorMessage += "Please select a start time in the future\n";
         } if (event.getMinRsvps() != null && event.getMaxRsvps() != null && event.getMinRsvps() > event.getMaxRsvps()) {
             errorMessage += "Please select a valid range of guests\n";
+        } if (event.getMaxRsvps() != null && event.getMaxRsvps().equals(0)) {
+            errorMessage += "Please let at least one person attend\n";
         } if (event.getTitle().length() == 0) {
             errorMessage += "Please provide a title for the event\n";
         } if (event.getLocation().length() == 0)  {
@@ -233,18 +236,19 @@ public class CreateEventActivity extends AppCompatActivity implements
                 return response;
             } catch (IOException e) {
                 e.printStackTrace();
+                cancel(true);
                 return null;
             }
         }
 
         @Override
         protected void onPostExecute(HttpResponse res) {
-            new AlertDialog.Builder(activity.getApplicationContext())
+            new AlertDialog.Builder(activity)
                     .setMessage(R.string.event_created_message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
-                            Intent intent = new Intent();
+                            Intent intent = new Intent(activity.getApplicationContext(), FeedActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                         }

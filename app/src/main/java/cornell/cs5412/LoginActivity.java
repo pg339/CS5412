@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -24,13 +26,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class LoginActivity extends Activity {
-    public final static String SESSION_TOKEN_KEY = "cornell.CS5412.SESSION_TOKEN_KEY";
-    public final static String USER_ID = "cornell.CS5412.USER_ID";
     public final static String LOGOUT_ACTION = "cornell.CS412.LOGOUT_ACTION";
 
     public LoginButton loginButton;
     public CallbackManager callbackManager;
     public TextView loginStatus;
+    public ProfileTracker mProfileTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,22 @@ public class LoginActivity extends Activity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                new CreateAccountTask().execute(Profile.getCurrentProfile().getId());
+                if(Profile.getCurrentProfile() == null) {
+                    mProfileTracker = new ProfileTracker() {
+                        @Override
+                        protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
+                            // profile2 is the new profile
+                            Log.v("facebook - profile", profile2.getFirstName());
+                            mProfileTracker.stopTracking();
+                        }
+                    };
+                    mProfileTracker.startTracking();
+                }
+                else {
+                    Profile profile = Profile.getCurrentProfile();
+                    Log.v("facebook - profile", profile.getFirstName());
+                    new CreateAccountTask().execute(Profile.getCurrentProfile().getId());
+                }
             }
 
             @Override
@@ -64,6 +80,8 @@ public class LoginActivity extends Activity {
                 loginButton.setText("Login attempt failed.");
             }
         });
+
+        Profile profile = Profile.getCurrentProfile();
 
         if (FacebookUtil.isLoggedIn()) {
             Intent intent = new Intent(this, FeedActivity.class);

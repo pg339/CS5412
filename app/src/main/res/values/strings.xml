@@ -5,8 +5,10 @@
     <!--<string name="base_api_url">"128.84.72.22:57945</string>-->
     <string name="create_account_url">/api/users"</string>
     <string name="create_event_url">/api/events"</string>
-    <string name="rsvp_url">api/events/rsvp/</string>
-    <string name="unrsvp_url">api/events/unrsvp/</string>
+    <string name="get_feed_url">/api/events</string>
+    <string name="rsvp_url">/api/events/rsvp/</string>
+    <!--PUT {event id}/{user-id}-->
+    <string name="unrsvp_url">/api/events/unrsvp/</string>
     <!--check whatsup with "'s-->
     <string name="action_settings">Settings</string>
     <string name="title_activity_feed">FeedActivity</string>
@@ -27,4 +29,6 @@
         <item>Log out</item>
     </string-array>
     <string name="provider_off_message">Please enable network services</string>
+    <string name="successful_attending_message">You are now attending this event</string>
+    <string name="successful_unattending_message">You are no longer attending this event</string>
 </resources>

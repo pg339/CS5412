@@ -5,13 +5,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,14 +40,16 @@ public class FacebookUtil {
         return accessToken != null;
     }
 
-    public static Bitmap getFacebookProfilePicture(String userID) throws IOException {
-        URL imageUrl = new URL("https://graph.facebook.com/" + userID + "/picture?type=large");
+    public static Bitmap getFacebookProfilePicture(String userID, Context context) throws IOException {
         try {
-            return BitmapFactory.decodeStream(new GetStream().execute(imageUrl).get());
-        } catch (InterruptedException | ExecutionException e) {
+            return new GetProfilePicture(context).execute("https://graph.facebook.com/" + userID + "/picture?type=large").get();
+        } catch (InterruptedException e) {
             e.printStackTrace();
+            return null;
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static String getFacebookProfileField(String userID, String field) {
@@ -72,7 +77,29 @@ public class FacebookUtil {
         @Override
         protected InputStream doInBackground(URL... args) {
             try {
-                return args[0].openConnection().getInputStream();
+                InputStream stream = args[0].openConnection().getInputStream();
+                return stream;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+    public static class GetProfilePicture extends AsyncTask<String, Void, Bitmap> {
+
+        private Context context;
+
+        public GetProfilePicture(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected  Bitmap doInBackground(String... args) {
+            try {
+                return Picasso.with(context)
+                        .load(args[0])
+                        .get();
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
