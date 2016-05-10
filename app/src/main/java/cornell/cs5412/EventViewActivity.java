@@ -93,6 +93,9 @@ public class EventViewActivity extends AppCompatActivity {
             if (event.getRsvps().contains(user)) {
                 attendingSwitch.setChecked(true);
             } else {
+                if (event.getMaxRsvps() <= event.getRsvps().size()) {
+                    attendingSwitch.setClickable(false);
+                }
                 attendingSwitch.setChecked(false);
             }
         }
