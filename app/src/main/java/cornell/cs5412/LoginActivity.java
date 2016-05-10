@@ -101,7 +101,6 @@ public class LoginActivity extends Activity {
     }
 
     private class CreateAccountTask extends AsyncTask<String, Void, HttpResponse> {
-        //TODO: Change return to Feed, implement parcelable in Feed and Coordinates
 
         @Override
         protected HttpResponse doInBackground(String... args) {
@@ -135,7 +134,6 @@ public class LoginActivity extends Activity {
 
         @Override
         protected void onCancelled(HttpResponse s) {
-            //TODO: Refine this possibly
             loginStatus.setText("Login failed");
         }
     }

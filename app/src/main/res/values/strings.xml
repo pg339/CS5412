@@ -13,14 +13,17 @@
     <string name="facebook_app_id">1570134529971692</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_create_event">CreateEventActivity</string>
+    <string name="event_created_message">Event created successfully</string>
     <string name="empty_feed_text">There are no events in your area</string>
+    <string name="no_events_created_text">You have not created any events</string>
+    <string name="no_events_attending_text">You are not attending any events</string>
     <string name="title_activity_event_view">EventViewActivity</string>
     <string name="attending_switch">Going:</string>
     <string name="cancel_event">Cancel\nEvent</string>
     <string-array name="drawer_options">
         <item>My events</item>
         <item>Events I\'m attending</item>
-        <item>Settings</item>
+        <item>Newsfeed</item>
         <item>Log out</item>
     </string-array>
     <string name="provider_off_message">Please enable network services</string>

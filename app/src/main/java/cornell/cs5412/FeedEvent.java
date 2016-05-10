@@ -22,7 +22,6 @@ public class FeedEvent implements IEvent{
     public TextView creatorBox;
 
     public FeedEvent(Context context, IEvent event) {
-        //TODO: Truncate text to good size
         this.event = event;
         titleBox = new TextView(context);
         titleBox.setId(View.generateViewId());

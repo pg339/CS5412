@@ -1,7 +1,9 @@
 package cornell.cs5412;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -73,7 +75,12 @@ public class EventViewActivity extends AppCompatActivity {
             TextView goingLabel = (TextView) findViewById(R.id.event_view_attendance_switch_label);
             attendingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    //TODO: Update rsvp list and send update
+                    //TODO: Send update with possible status change
+                    if (isChecked) {
+                        event.getRsvps().add(Profile.getCurrentProfile().getId());
+                    } else {
+                        event.getRsvps().remove(Profile.getCurrentProfile().getId());
+                    }
                 }
             });
             if (event.getRsvps().contains(user)) {
@@ -85,7 +92,21 @@ public class EventViewActivity extends AppCompatActivity {
 
         countButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                //TODO: Display fragment with rsvp list
+                if (event.getRsvps().size() == 0) {
+                    return;
+                }
+                String attendees = "";
+                for (int i=0; i<event.getRsvps().size(); i++) {
+                    attendees += FacebookUtil.getFacebookProfileField(event.getRsvps().get(i), "name")+"\n";
+                }
+                new AlertDialog.Builder(getApplicationContext())
+                        .setMessage(attendees)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
             }
         });
 

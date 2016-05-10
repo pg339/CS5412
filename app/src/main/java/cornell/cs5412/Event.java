@@ -19,7 +19,6 @@ import java.util.List;
  * Class to represent events in a way that's easily translatable into JSON
  */
 public class Event implements IEvent, Parcelable {
-    //TODO: Review constructors
     private String id;
     private String title;
     private String owner;

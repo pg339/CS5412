@@ -38,7 +38,7 @@ import java.util.concurrent.ExecutionException;
 public class FeedActivity extends AppCompatActivity {
     private static final int[] ICONS = {R.drawable.ic_mode_edit_black_24dp,
             R.drawable.ic_today_black_24dp,
-            R.drawable.ic_settings_black_24dp,
+            R.drawable.ic_view_headline_black_24dp,
             R.drawable.ic_do_not_disturb_black_24dp};
 
     private RecyclerView mRecyclerView;
@@ -51,6 +51,7 @@ public class FeedActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager dLayoutManager;
     private DrawerLayout drawer;
     private Toolbar toolbar;
+    private TextView label;
 
     double longitude;
     double latitute;
@@ -118,14 +119,37 @@ public class FeedActivity extends AppCompatActivity {
                     new RecyclerItemClickListener.OnItemClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
-                            //TODO: Handle menu item click
                             String[] options = getResources().getStringArray(R.array.drawer_options);
                             switch (options[position - 1]) {
                                 case "My events":
+                                    events = getMyEvents();
+                                    if (events == null || events.length == 0) {
+                                        clearFeed();
+                                        label.setText(getString(R.string.no_events_created_text));
+                                    } else {
+                                        label.setText("");
+                                        setFeedEvents(events);
+                                    }
                                     break;
                                 case "Events I'm attending":
+                                    events = getEventsImAttending();
+                                    if (events == null || events.length == 0) {
+                                        clearFeed();
+                                        label.setText(getString(R.string.no_events_attending_text));
+                                    } else {
+                                        label.setText("");
+                                        setFeedEvents(events);
+                                    }
                                     break;
-                                case "Settings":
+                                case "Newsfeed":
+                                    events = getFeedEvents();
+                                    if (events == null || events.length == 0) {
+                                        clearFeed();
+                                        label.setText(getString(R.string.empty_feed_text));
+                                    } else {
+                                        label.setText("");
+                                        setFeedEvents(events);
+                                    }
                                     break;
                                 case "Log out":
                                     FacebookUtil.logout(view.getContext());
@@ -146,26 +170,30 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     public void initializeMainContent() {
-        events = getEvents();
-        if (events == null || events.length == 0) {
-            setContentView(R.layout.activity_feed_empty);
-        } else {
-            setContentView(R.layout.activity_feed);
-            mRecyclerView = (RecyclerView) findViewById(R.id.feed_recycler_view);
-            mLayoutManager = new LinearLayoutManager(this);
-            mRecyclerView.setLayoutManager(mLayoutManager);
+        setContentView(R.layout.activity_feed);
+        events = getFeedEvents();
 
-            mAdapter = new FeedAdapter(events);
-            mRecyclerView.setAdapter(mAdapter);
-            mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(this));
-            mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(),
-                    new RecyclerItemClickListener.OnItemClickListener() {
-                        @Override public void onItemClick(View view, int position) {
-                            Intent intent = new Intent(getApplicationContext(), EventViewActivity.class);
-                            intent.putExtra(EventViewActivity.EVENT_EXTRA, (Parcelable) ((FeedAdapter) mAdapter).events[position].event);
-                            startActivity(intent);
-                        }
-                    }));
+        label = (TextView) findViewById(R.id.feed_activity_label);
+        mRecyclerView = (RecyclerView) findViewById(R.id.feed_recycler_view);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mAdapter = new FeedAdapter(events);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(this));
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(),
+                new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position) {
+                        Intent intent = new Intent(getApplicationContext(), EventViewActivity.class);
+                        intent.putExtra(EventViewActivity.EVENT_EXTRA, (Parcelable) ((FeedAdapter) mAdapter).events[position].event);
+                        startActivity(intent);
+                    }
+                }));
+
+        if (events == null || events.length == 0) {
+            label.setText(getString(R.string.empty_feed_text));
+        } else {
+            setFeedEvents(events);
         }
 
         IntentFilter intentFilter = new IntentFilter();
@@ -179,6 +207,25 @@ public class FeedActivity extends AppCompatActivity {
         registerReceiver(logoutReceiver, intentFilter);
     }
 
+    public void clearFeed() {
+        mAdapter = new FeedAdapter(new FeedEvent[0]);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    public void setFeedEvents(FeedEvent[] events) {
+        mAdapter = new FeedAdapter(events);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(this));
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(),
+                new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position) {
+                        Intent intent = new Intent(getApplicationContext(), EventViewActivity.class);
+                        intent.putExtra(EventViewActivity.EVENT_EXTRA, (Parcelable) ((FeedAdapter) mAdapter).events[position].event);
+                        startActivity(intent);
+                    }
+                }));
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -186,16 +233,29 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        events = getFeedEvents();
+        if (events == null || events.length == 0) {
+            clearFeed();
+            label.setText(getString(R.string.empty_feed_text));
+        } else {
+            label.setText("");
+            setFeedEvents(events);
+        }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+    public FeedEvent[] getMyEvents() {
+        //TODO: Implement get my events
+        return null;
     }
 
-    public FeedEvent[] getEvents() {
+    public FeedEvent[] getEventsImAttending() {
+        //TODO: Implement get events I'm attending
+        return null;
+    }
+
+    public FeedEvent[] getFeedEvents() {
         //placeholder event samples
         Gson gson = new Gson();
         Coordinates coordinates = new Coordinates(latitute, longitude);
@@ -209,7 +269,6 @@ public class FeedActivity extends AppCompatActivity {
             return feedEvents;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            //TODO: Handle
         } return null;
 //        Event event1 = new Event("My event", Profile.getCurrentProfile().getId(), "Fun in the sun", "Saturday, April 23rd at 8 PM", "David L. Call Auditorium");
 //        Event event2 = new Event("My super long and obnoxious event name hahahahahahahahahahhahaahahahahahahaa",
@@ -230,7 +289,6 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     private class GetMainFeedTask extends AsyncTask<String, Void, Feed> {
-        //TODO: Actually get and process feed
 
         @Override
         protected Feed doInBackground(String... args) {
@@ -247,11 +305,6 @@ public class FeedActivity extends AppCompatActivity {
                 e.printStackTrace();
                 return null;
             }
-        }
-
-        @Override
-        protected void onPostExecute(Feed feed) {
-
         }
     }
 }

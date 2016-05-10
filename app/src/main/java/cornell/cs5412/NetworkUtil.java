@@ -46,17 +46,20 @@ public class NetworkUtil {
             conn.setReadTimeout(10000 /* milliseconds */);
             conn.setConnectTimeout(15000 /* milliseconds */);
             conn.setRequestMethod(method);
-            conn.setDoOutput(true);
-            conn.setUseCaches(false);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Host", "ec2-54-175-7-114.compute-1.amazonaws.com");
+            if ((method.equals("POST") || method.equals("PUT")) && content != null && content.length() > 0) {
+                conn.setDoOutput(true);
+                conn.setUseCaches(false);
 
-            OutputStream out = new DataOutputStream(conn.getOutputStream());
-            out.write(content.getBytes("UTF-8"));
-            out.flush();
-            out.close();
-
+                OutputStream out = new DataOutputStream(conn.getOutputStream());
+                out.write(content.getBytes("UTF-8"));
+                out.flush();
+                out.close();
+            } else {
+                conn.setDoInput(true);
+            }
 
             // Starts the query
             conn.connect();

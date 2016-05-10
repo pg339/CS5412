@@ -1,9 +1,12 @@
 package cornell.cs5412;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -32,7 +35,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class CreateEventActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener,
         DatePickerFragment.OnCompleteListener,
         TimePickerFragment.OnCompleteListener {
     EditText titleBox;
@@ -188,12 +190,10 @@ public class CreateEventActivity extends AppCompatActivity implements
             Gson gson = new Gson();
             String json = gson.toJson(event);
 
-            new CreateEventTask().execute(json);
+            new CreateEventTask(this).execute(json);
         }
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 
     @Override
     public void onCompleteTimePicker(int hour, int minute) {
@@ -215,6 +215,12 @@ public class CreateEventActivity extends AppCompatActivity implements
 
     private class CreateEventTask extends AsyncTask<String, Void, HttpResponse> {
 
+        private Activity activity;
+
+        public CreateEventTask(Activity activity) {
+            this.activity = activity;
+        }
+
         @Override
         protected HttpResponse doInBackground(String... args) {
             try {
@@ -233,12 +239,21 @@ public class CreateEventActivity extends AppCompatActivity implements
 
         @Override
         protected void onPostExecute(HttpResponse res) {
-            info.setText("Response code is: " + res.responseCode + " and content is " + res.content);
+            new AlertDialog.Builder(activity.getApplicationContext())
+                    .setMessage(R.string.event_created_message)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            Intent intent = new Intent();
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    })
+                    .show();
         }
 
         @Override
         protected void onCancelled(HttpResponse s) {
-            //TODO: Refine this possibly
             info.setText("Event creation failed");
         }
     }
