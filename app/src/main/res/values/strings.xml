@@ -6,7 +6,7 @@
     <string name="create_account_url">/api/users"</string>
     <string name="create_event_url">/api/events"</string>
     <string name="get_feed_url">/api/events</string>
-    <string name="get_user_url">/api/events/</string>
+    <string name="get_user_url">/api/users/</string>
     <!--{user-id}-->
     <string name="rsvp_url">/api/events/rsvp/</string>
     <!--PUT {event id}/{user-id}-->

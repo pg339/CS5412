@@ -29,7 +29,6 @@ public class MiscHelpers {
             return DateFormat.getDateInstance().format(date) + " at " +
                     DateFormat.getTimeInstance(DateFormat.SHORT).format(date);
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;

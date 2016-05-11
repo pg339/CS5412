@@ -96,6 +96,7 @@ public class EventViewActivity extends AppCompatActivity {
                 }
                 attendingSwitch.setChecked(false);
             }
+            //TODO: When 0 or null rsvp bounds, shit is out of whack
         }
 
         countButton.setOnClickListener(new View.OnClickListener() {
