@@ -122,14 +122,7 @@ public class EventViewActivity extends AppCompatActivity {
         titleView.setText(event.getTitle());
         descriptionView.setText(event.getDescription());
         creatorView.setText("Hosted by "+FacebookUtil.getFacebookProfileField(event.getOwner(), "name"));
-        updateButtonCount();
-        String rsvpLabel = "Currently attending.";
-        if (event.getMinRsvps() == null || event.getMinRsvps() <= event.getRsvps().size()) {
-            rsvpLabel += "\nThe event is on!";
-        } else {
-            rsvpLabel += "\n"+(event.getMinRsvps() - event.getRsvps().size())+" more needed.";
-        }
-        label.setText(rsvpLabel);
+        updateView();
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(LoginActivity.LOGOUT_ACTION);
@@ -148,18 +141,27 @@ public class EventViewActivity extends AppCompatActivity {
         unregisterReceiver(logoutReceiver);
     }
 
-    public void updateButtonCount() {
+    public void updateView() {
         String rsvpCount = ""+event.getRsvps().size();
-        if (event.getMaxRsvps() != null) {
+        if (event.getMaxRsvps() != Integer.MAX_VALUE) {
             rsvpCount += "/"+event.getMaxRsvps();
         }
         countButton.setText(rsvpCount);
+
+        String rsvpLabel = "currently attending";
+        if (event.getMinRsvps() == null || event.getMinRsvps() <= event.getRsvps().size()) {
+            rsvpLabel += "\nThe event is on!";
+        } else {
+            rsvpLabel += "\n"+(event.getMinRsvps() - event.getRsvps().size())+" more needed";
+        }
+        label.setText(rsvpLabel);
     }
 
     private class RsvpTask extends AsyncTask<String, Void, String> {
 
         private Activity activity;
         private boolean attending;
+        private boolean success;
 
         public RsvpTask(Activity activity, boolean attending) {
             this.activity = activity;
@@ -177,6 +179,7 @@ public class EventViewActivity extends AppCompatActivity {
                 } else if (response.responseCode >= 400 && response.responseCode < 600) {
                     return "Got response code "+response.responseCode;
                 }
+                success = true;
                 return attending ? getString(R.string.successful_attending_message) : getString(R.string.successful_unattending_message);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -191,12 +194,17 @@ public class EventViewActivity extends AppCompatActivity {
             } else {
                 event.getRsvps().remove(user);
             }
-            updateButtonCount();
+            updateView();
             new AlertDialog.Builder(activity)
                     .setMessage(message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
+                            if (!success) {
+                                Intent intent = new Intent(activity.getApplicationContext(), FeedActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                            }
                         }
                     })
                     .show();

@@ -154,6 +154,7 @@ public class CreateEventActivity extends AppCompatActivity implements
     }
 
     public void create(View view) {
+        createButton.setClickable(false);
         label.setText("");
         Event event = new Event();
         event.setTitle(titleBox.getText().toString());
@@ -162,9 +163,9 @@ public class CreateEventActivity extends AppCompatActivity implements
         event.setStartTime(MiscHelpers.formatDateForNetwork(c.getTime()));
         event.setLocation(locationBox.getText().toString());
         String min = minRsvpsBox.getText().toString();
-        event.setMinRsvps(minRsvpsBox.getText().toString().equals("") ? null : Integer.parseInt(min));
+        event.setMinRsvps(minRsvpsBox.getText().toString().equals("") ? 0 : Integer.parseInt(min));
         String max = maxRsvpsBox.getText().toString();
-        event.setMaxRsvps(maxRsvpsBox.getText().toString().equals("") ? null : Integer.parseInt(max));
+        event.setMaxRsvps(maxRsvpsBox.getText().toString().equals("") ? Integer.MAX_VALUE : Integer.parseInt(max));
         event.updateEventStatus();
         event.setLatitude(latitute);
         event.setLongitude(longitude);
@@ -241,6 +242,7 @@ public class CreateEventActivity extends AppCompatActivity implements
 
         @Override
         protected void onPostExecute(String res) {
+            createButton.setClickable(true);
             new AlertDialog.Builder(activity)
                     .setMessage(res)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

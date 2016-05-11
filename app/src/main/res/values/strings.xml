@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CS5412</string>
 
-    <string name="base_api_url">"http://ec2-54-175-7-114.compute-1.amazonaws.com</string>
+    <string name="base_api_url">"http://CS5412-tpf32-lb-1082876611.us-east-1.elb.amazonaws.com</string>
     <!--<string name="base_api_url">"128.84.72.22:57945</string>-->
     <string name="create_account_url">/api/users"</string>
     <string name="create_event_url">/api/events"</string>
