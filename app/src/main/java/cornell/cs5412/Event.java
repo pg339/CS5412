@@ -1,12 +1,9 @@
 package cornell.cs5412;
 
-import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.facebook.Profile;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;

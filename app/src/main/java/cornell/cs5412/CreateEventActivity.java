@@ -15,7 +15,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -24,14 +23,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class CreateEventActivity extends AppCompatActivity implements
@@ -216,49 +211,49 @@ public class CreateEventActivity extends AppCompatActivity implements
         this.day = day;
     }
 
-    private class CreateEventTask extends AsyncTask<String, Void, HttpResponse> {
+    private class CreateEventTask extends AsyncTask<String, Void, String> {
 
         private Activity activity;
+        private boolean success;
 
         public CreateEventTask(Activity activity) {
             this.activity = activity;
+            success = false;
         }
 
         @Override
-        protected HttpResponse doInBackground(String... args) {
+        protected String doInBackground(String... args) {
             try {
                 String url = getString(R.string.base_api_url)+getString(R.string.create_event_url);
                 HttpResponse response = NetworkUtil.httpPost(url, args[0]);
-                if (response == null || (response.responseCode >= 400 && response.responseCode < 600)) {
-                    cancel(true);
-                    return null;
+                if (response == null) {
+                    return "Response was null";
+                } else if (response.responseCode >= 400 && response.responseCode < 600) {
+                    return "Got response code "+response.responseCode;
                 }
-                return response;
+                success = true;
+                return getString(R.string.event_created_message);
             } catch (IOException e) {
                 e.printStackTrace();
-                cancel(true);
-                return null;
+                return "Event creation failed with "+e.toString();
             }
         }
 
         @Override
-        protected void onPostExecute(HttpResponse res) {
+        protected void onPostExecute(String res) {
             new AlertDialog.Builder(activity)
-                    .setMessage(R.string.event_created_message)
+                    .setMessage(res)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
-                            Intent intent = new Intent(activity.getApplicationContext(), FeedActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
+                            if (success) {
+                                Intent intent = new Intent(activity.getApplicationContext(), FeedActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                            }
                         }
                     })
                     .show();
-        }
-
-        @Override
-        protected void onCancelled(HttpResponse s) {
-            info.setText("Event creation failed");
         }
     }
 }

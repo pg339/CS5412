@@ -16,7 +16,7 @@ android {
             debuggable true
         }
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -34,6 +34,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.3.0'
     compile 'de.hdodenhof:circleimageview:1.2.1'
     compile 'com.android.support:design:23.3.0'
-    compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
 }

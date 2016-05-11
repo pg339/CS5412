@@ -117,33 +117,33 @@ public class FeedActivity extends AppCompatActivity {
                             String[] options = getResources().getStringArray(R.array.drawer_options);
                             switch (options[position - 1]) {
                                 case "My events":
+                                    clearFeed();
                                     events = getMyEvents();
-                                    if (events == null || events.length == 0) {
-                                        clearFeed();
+                                    if (events != null && events.length == 0) {
                                         label.setText(getString(R.string.no_events_created_text));
-                                    } else {
+                                    } else if (events != null){
                                         label.setText("");
                                         setFeedEvents(events);
                                     }
                                     drawer.closeDrawers();
                                     break;
                                 case "Events I'm attending":
+                                    clearFeed();
                                     events = getEventsImAttending();
-                                    if (events == null || events.length == 0) {
-                                        clearFeed();
+                                    if (events != null && events.length == 0) {
                                         label.setText(getString(R.string.no_events_attending_text));
-                                    } else {
+                                    } else if (events != null) {
                                         label.setText("");
                                         setFeedEvents(events);
                                     }
                                     drawer.closeDrawers();
                                     break;
                                 case "Newsfeed":
+                                    clearFeed();
                                     events = getFeedEvents();
-                                    if (events == null || events.length == 0) {
-                                        clearFeed();
+                                    if (events != null && events.length == 0) {
                                         label.setText(getString(R.string.empty_feed_text));
-                                    } else {
+                                    } else if (events != null){
                                         label.setText("");
                                         setFeedEvents(events);
                                     }
@@ -257,13 +257,39 @@ public class FeedActivity extends AppCompatActivity {
     }
 
     public FeedEvent[] getMyEvents() {
-        //TODO: Implement get my events
-        return null;
+        try {
+            DisplayUser user = new GetUserTask().execute(Profile.getCurrentProfile().getId()).get();
+            if (user == null || user.events == null) {
+                label.setText("Fetching my events failed\nbecause of null "+(user == null ? "user" : "event list"));
+                return null;
+            }
+            FeedEvent[] feedEvents = new FeedEvent[user.events.size()];
+            for (int i=0; i<feedEvents.length; i++) {
+                feedEvents[i] = new FeedEvent(getApplicationContext(), user.events.get(i));
+            }
+            return feedEvents;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            label.setText("Fetching my events failed with\n"+e.toString());
+        } return null;
     }
 
     public FeedEvent[] getEventsImAttending() {
-        //TODO: Implement get events I'm attending
-        return null;
+        try {
+            DisplayUser user = new GetUserTask().execute(Profile.getCurrentProfile().getId()).get();
+            if (user == null || user.rsvps == null) {
+                label.setText("Fetching rsvp'd events failed\nbecause of null "+(user == null ? "user" : "rsvp list"));
+                return null;
+            }
+            FeedEvent[] feedEvents = new FeedEvent[user.rsvps.size()];
+            for (int i=0; i<feedEvents.length; i++) {
+                feedEvents[i] = new FeedEvent(getApplicationContext(), user.rsvps.get(i));
+            }
+            return feedEvents;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            label.setText("Fetching rsvp'd events failed\nwith error "+e.toString());
+        } return null;
     }
 
     public FeedEvent[] getFeedEvents() {
@@ -271,6 +297,7 @@ public class FeedActivity extends AppCompatActivity {
         try {
             List<Event> feed = new GetMainFeedTask().execute(in).get();
             if (feed == null) {
+                label.setText("Fetching newsfeed failed\nbecause of null feed");
                 return null;
             }
             FeedEvent[] feedEvents = new FeedEvent[feed.size()];
@@ -280,6 +307,7 @@ public class FeedActivity extends AppCompatActivity {
             return feedEvents;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            label.setText("Fetching newsfeed failed with\n"+e.toString());
         } return null;
 //        Event event1 = new Event("My event", Profile.getCurrentProfile().getId(), "Fun in the sun", "Saturday, April 23rd at 8 PM", "David L. Call Auditorium");
 //        Event event2 = new Event("My super long and obnoxious event name hahahahahahahahahahhahaahahahahahahaa",
@@ -301,6 +329,8 @@ public class FeedActivity extends AppCompatActivity {
 
     private class GetMainFeedTask extends AsyncTask<String, Void, List<Event>> {
 
+        public boolean success;
+
         @Override
         protected List<Event> doInBackground(String... args) {
             try {
@@ -313,7 +343,31 @@ public class FeedActivity extends AppCompatActivity {
                 Gson gson = new Gson();
                 Type type = new TypeToken<List<Event>>(){}.getType();
                 List<Event> events = gson.fromJson(response.content, type);
+                success = true;
                 return events;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+    private class GetUserTask extends AsyncTask<String, Void, DisplayUser> {
+
+        private boolean success;
+
+        @Override
+        protected DisplayUser doInBackground(String... args) {
+            try {
+                String url = getString(R.string.base_api_url)+getString(R.string.get_user_url);
+                HttpResponse response = NetworkUtil.httpGet(url+args[0]);
+                if (response == null || (response.responseCode >= 400 && response.responseCode < 600)) {
+                    cancel(true);
+                    return null;
+                }
+                Gson gson = new Gson();
+                success = true;
+                return gson.fromJson(response.content, DisplayUser.class);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;

@@ -72,7 +72,7 @@ public class EventViewActivity extends AppCompatActivity {
             cancel = (Button) findViewById(R.id.event_view_cancel_button);
             cancel.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    //TODO: Cancel event
+                    new CancelEventTask(activity).execute(event.getEventId(), user);
                 }
             });
         } else {
@@ -82,10 +82,8 @@ public class EventViewActivity extends AppCompatActivity {
             attendingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked && !event.getRsvps().contains(user)) {
-                        event.getRsvps().add(Profile.getCurrentProfile().getId());
                         new RsvpTask(activity, isChecked).execute(event.getEventId(), user);
                     } else if (!isChecked && event.getRsvps().contains(user)) {
-                        event.getRsvps().remove(Profile.getCurrentProfile().getId());
                         new RsvpTask(activity, isChecked).execute(event.getEventId(), user);
                     }
                 }
@@ -157,7 +155,7 @@ public class EventViewActivity extends AppCompatActivity {
         countButton.setText(rsvpCount);
     }
 
-    private class RsvpTask extends AsyncTask<String, Void, HttpResponse> {
+    private class RsvpTask extends AsyncTask<String, Void, String> {
 
         private Activity activity;
         private boolean attending;
@@ -168,27 +166,31 @@ public class EventViewActivity extends AppCompatActivity {
         }
 
         @Override
-        protected HttpResponse doInBackground(String... args) {
+        protected String doInBackground(String... args) {
             try {
                 String tail = attending ? getString(R.string.rsvp_url) : getString(R.string.unrsvp_url);
                 String url = getString(R.string.base_api_url)+tail+args[0]+"/"+args[1];
                 HttpResponse response = NetworkUtil.httpPut(url, "");
-                if (response == null || (response.responseCode >= 400 && response.responseCode < 600)) {
-                    cancel(true);
-                    return null;
+                if (response == null) {
+                    return "Response was null";
+                } else if (response.responseCode >= 400 && response.responseCode < 600) {
+                    return "Got response code "+response.responseCode;
                 }
-                return response;
+                return attending ? getString(R.string.successful_attending_message) : getString(R.string.successful_unattending_message);
             } catch (IOException e) {
                 e.printStackTrace();
-                cancel(true);
-                return null;
+                return "Rsvp failed with "+e.toString();
             }
         }
 
         @Override
-        protected void onPostExecute(HttpResponse res) {
+        protected void onPostExecute(String message) {
+            if (attending) {
+                event.getRsvps().add(user);
+            } else {
+                event.getRsvps().remove(user);
+            }
             updateButtonCount();
-            String message = attending ? getString(R.string.successful_attending_message) : getString(R.string.successful_unattending_message);
             new AlertDialog.Builder(activity)
                     .setMessage(message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -198,9 +200,51 @@ public class EventViewActivity extends AppCompatActivity {
                     })
                     .show();
         }
+    }
+
+    private class CancelEventTask extends AsyncTask<String, Void, String> {
+
+        private Activity activity;
+        private boolean success;
+
+        public CancelEventTask(Activity activity) {
+            this.activity = activity;
+            success = false;
+        }
 
         @Override
-        protected void onCancelled(HttpResponse s) {
+        protected String doInBackground(String... args) {
+            try {
+                String url = getString(R.string.base_api_url)+getString(R.string.cancel_event_url);
+                HttpResponse response = NetworkUtil.httpPut(url+args[0]+"/"+args[1], "");
+                if (response == null) {
+                    return "Response was null";
+                } else if (response.responseCode >= 400 && response.responseCode < 600) {
+                    return "Got response code "+response.responseCode;
+                }
+                success = true;
+                return "Event cancel successful";
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "Event cancel with "+e.toString();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String message) {
+            new AlertDialog.Builder(activity)
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            if (success) {
+                                Intent intent = new Intent(activity.getApplicationContext(), FeedActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                            }
+                        }
+                    })
+                    .show();
         }
     }
 }

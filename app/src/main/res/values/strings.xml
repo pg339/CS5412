@@ -6,10 +6,16 @@
     <string name="create_account_url">/api/users"</string>
     <string name="create_event_url">/api/events"</string>
     <string name="get_feed_url">/api/events</string>
+    <string name="get_user_url">/api/events/</string>
+    <!--{user-id}-->
     <string name="rsvp_url">/api/events/rsvp/</string>
     <!--PUT {event id}/{user-id}-->
+
     <string name="unrsvp_url">/api/events/unrsvp/</string>
     <!--check whatsup with "'s-->
+
+    <string name="cancel_event_url">/api/events/cancel/</string>
+    <!--PUT {event id}/{user-id}-->
     <string name="action_settings">Settings</string>
     <string name="title_activity_feed">FeedActivity</string>
     <string name="facebook_app_id">1570134529971692</string>
